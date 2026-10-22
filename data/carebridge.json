@@ -1,0 +1,566 @@
+{
+  "users": [
+    {
+      "id": "user_areeba_khan",
+      "email": "areeba@example.com",
+      "passwordHash": "9d284db63a937f9568c31c302b211cea11c7e06d06c6b888afb5a08bdec6d3579230dc5f0a2c4e1515b7d46ac886d3364986efc784c17d3ad8b42b771830d789",
+      "name": "Areeba Khan",
+      "role": "patient",
+      "language": "en",
+      "accessibility": {
+        "highContrast": false,
+        "fontSize": "normal",
+        "reducedMotion": false
+      },
+      "treatmentPlan": {
+        "regimen": "Paclitaxel & Carboplatin",
+        "currentCycle": 2,
+        "totalCycles": 6,
+        "startDate": "2026-09-14",
+        "nextDoseDate": "2026-10-28",
+        "oncologist": "Dr. Saman Ali",
+        "clinic": "Lahore Comprehensive Cancer Care Center",
+        "status": "in_progress"
+      },
+      "createdAt": "2026-09-01T08:00:00.000Z"
+    },
+    {
+      "id": "user_tariq_khan",
+      "email": "tariq@example.com",
+      "passwordHash": "9d284db63a937f9568c31c302b211cea11c7e06d06c6b888afb5a08bdec6d3579230dc5f0a2c4e1515b7d46ac886d3364986efc784c17d3ad8b42b771830d789",
+      "name": "Tariq Khan",
+      "role": "caregiver",
+      "language": "en",
+      "accessibility": {
+        "highContrast": false,
+        "fontSize": "normal",
+        "reducedMotion": false
+      },
+      "treatmentPlan": {
+        "regimen": "",
+        "currentCycle": 0,
+        "totalCycles": 0,
+        "startDate": "",
+        "nextDoseDate": "",
+        "oncologist": "",
+        "clinic": "",
+        "status": "completed"
+      },
+      "createdAt": "2026-09-02T10:00:00.000Z"
+    },
+    {
+      "id": "user_dr_saman",
+      "email": "saman@example.com",
+      "passwordHash": "9d284db63a937f9568c31c302b211cea11c7e06d06c6b888afb5a08bdec6d3579230dc5f0a2c4e1515b7d46ac886d3364986efc784c17d3ad8b42b771830d789",
+      "name": "Dr. Saman Ali",
+      "role": "doctor",
+      "language": "en",
+      "accessibility": {
+        "highContrast": false,
+        "fontSize": "normal",
+        "reducedMotion": false
+      },
+      "treatmentPlan": {
+        "regimen": "",
+        "currentCycle": 0,
+        "totalCycles": 0,
+        "startDate": "",
+        "nextDoseDate": "",
+        "oncologist": "",
+        "clinic": "Oncology Associates",
+        "status": "completed"
+      },
+      "createdAt": "2026-08-15T09:00:00.000Z"
+    }
+  ],
+  "sessions": [
+    {
+      "token": "9c1461393df293d35d6b6e60c2f4ec9c3fb0124018a78c38a15522f359365da5",
+      "userId": "user_areeba_khan",
+      "createdAt": 1792610207563,
+      "expiresAt": 1795202207563
+    },
+    {
+      "token": "41160641ada5916ac42863b9ab0f5833c989598f8fd1e36323c19309e1645b54",
+      "userId": "user_areeba_khan",
+      "createdAt": 1792610226284,
+      "expiresAt": 1795202226284
+    },
+    {
+      "token": "aee292430b18a30ae18cbfefb936c102409cbb65d039115e68b53fc5f9cf7c41",
+      "userId": "user_areeba_khan",
+      "createdAt": 1792610243234,
+      "expiresAt": 1795202243234
+    },
+    {
+      "token": "a344b3e423a490bb4b3abbce3e96baa66c090e2d6b089e4f5fc70d85b226e243",
+      "userId": "user_areeba_khan",
+      "createdAt": 1792610256806,
+      "expiresAt": 1795202256806
+    },
+    {
+      "token": "8252f5df2a9b5cb8040aafda62338b3f991494be1bedce524cef420559882de3",
+      "userId": "user_areeba_khan",
+      "createdAt": 1792654745257,
+      "expiresAt": 1795246745257
+    },
+    {
+      "token": "d41a27d15546b38f03edf3668c77e96cb42a717b71ddbd5e2c80368b5082ecac",
+      "userId": "user_areeba_khan",
+      "createdAt": 1792655322166,
+      "expiresAt": 1795247322166
+    },
+    {
+      "token": "ed7e574ab01578d93788650354ab1537a0ac54b99f9da26599f15765991920fe",
+      "userId": "user_areeba_khan",
+      "createdAt": 1792657279086,
+      "expiresAt": 1795249279086
+    },
+    {
+      "token": "7922d28b79ca451f3f0c4f47fddf45950798104b7357dfadd3889dd52effdef3",
+      "userId": "user_areeba_khan",
+      "createdAt": 1792658600808,
+      "expiresAt": 1795250600808
+    },
+    {
+      "token": "38a592f40334b82c66f156a37310092a981657212831d0a8a1fd75ccee2edddc",
+      "userId": "user_tariq_khan",
+      "createdAt": 1792660083235,
+      "expiresAt": 1795252083235
+    },
+    {
+      "token": "9aa8f45fdd3cd78aa8c95e8407adf910f2eb2930ee77b7219a4b0335ebd01b29",
+      "userId": "user_dr_saman",
+      "createdAt": 1792660083251,
+      "expiresAt": 1795252083251
+    },
+    {
+      "token": "6543baf17a58574487204c9368d2fc0cf25bcf41c09be8d2f300c0a89aafaaeb",
+      "userId": "user_areeba_khan",
+      "createdAt": 1792664967454,
+      "expiresAt": 1795256967454
+    },
+    {
+      "token": "a9f36cb3c31f08e9dd12d6a404357fa6d4c4937e16ee4e3bf68afdd13e07920f",
+      "userId": "user_areeba_khan",
+      "createdAt": 1792666678500,
+      "expiresAt": 1795258678500
+    }
+  ],
+  "appointments": [
+    {
+      "id": "apt_1",
+      "userId": "user_areeba_khan",
+      "title": "Cycle 2 Follow-up & Review",
+      "doctor": "Dr. Saman Ali",
+      "specialty": "Oncologist",
+      "date": "2026-10-28",
+      "time": "10:00 AM",
+      "location": "Outpatient Oncology Clinic, Suite 402",
+      "type": "oncology",
+      "notes": "Review complete blood count, discuss mild nausea from current cycle, evaluate antiemetic response.",
+      "reminder": true,
+      "createdAt": "2026-10-15T10:00:00.000Z"
+    },
+    {
+      "id": "apt_2",
+      "userId": "user_areeba_khan",
+      "title": "Routine Blood Test (CBC & CMP)",
+      "doctor": "Lab Services",
+      "specialty": "Pathology & Lab",
+      "date": "2026-11-04",
+      "time": "02:00 PM",
+      "location": "Central Diagnostic Laboratory, 1st Floor",
+      "type": "blood_test",
+      "notes": "Pre-chemotherapy round 3 lab work. Fasting not required for this panel.",
+      "reminder": true,
+      "createdAt": "2026-10-18T11:00:00.000Z"
+    },
+    {
+      "id": "apt_3",
+      "userId": "user_areeba_khan",
+      "title": "Follow-up Consultation",
+      "doctor": "Dr. Saman Ali",
+      "specialty": "Oncologist",
+      "date": "2026-11-11",
+      "time": "11:00 AM",
+      "location": "Outpatient Oncology Clinic, Suite 402",
+      "type": "consultation",
+      "notes": "Review lab results before scheduling Cycle 3 infusion.",
+      "reminder": true,
+      "createdAt": "2026-10-18T11:30:00.000Z"
+    }
+  ],
+  "journalEntries": [
+    {
+      "id": "jnl_1",
+      "userId": "user_areeba_khan",
+      "date": "2026-10-27",
+      "symptoms": [
+        "Mild nausea",
+        "Low energy"
+      ],
+      "severity": 3,
+      "mood": "okay",
+      "notes": "Slight wave of nausea around noon after light breakfast. Took prescribed antiemetic and rested for an hour. Feeling steady this evening.",
+      "createdAt": "2026-10-27T17:30:00.000Z"
+    },
+    {
+      "id": "jnl_2",
+      "userId": "user_areeba_khan",
+      "date": "2026-10-25",
+      "symptoms": [
+        "Slight headache"
+      ],
+      "severity": 2,
+      "mood": "good",
+      "notes": "Woke up with faint tension headache, drank warm herbal tea and hydrated well. Cleared up by lunchtime.",
+      "createdAt": "2026-10-25T14:15:00.000Z"
+    },
+    {
+      "id": "jnl_3",
+      "userId": "user_areeba_khan",
+      "date": "2026-10-23",
+      "symptoms": [
+        "Fatigue"
+      ],
+      "severity": 2,
+      "mood": "good",
+      "notes": "Better today, noticeably less fatigue. Managed a gentle 15-minute garden walk with Tariq.",
+      "createdAt": "2026-10-23T16:00:00.000Z"
+    },
+    {
+      "id": "jnl_4",
+      "userId": "user_areeba_khan",
+      "date": "2026-10-20",
+      "symptoms": [
+        "Mild tingling in fingers"
+      ],
+      "severity": 2,
+      "mood": "okay",
+      "notes": "Noticed slight peripheral tingling when holding cold drinks. Will mention this to Dr. Saman at next visit.",
+      "createdAt": "2026-10-20T19:00:00.000Z"
+    }
+  ],
+  "dailyTasks": [
+    {
+      "id": "tsk_1",
+      "userId": "user_areeba_khan",
+      "date": "2026-10-28",
+      "title": "Take prescribed medication (Morning dose)",
+      "category": "medication",
+      "completed": true
+    },
+    {
+      "id": "tsk_2",
+      "userId": "user_areeba_khan",
+      "date": "2026-10-28",
+      "title": "Drink water (Hydration goal: 2 liters)",
+      "category": "hydration",
+      "completed": true
+    },
+    {
+      "id": "tsk_3",
+      "userId": "user_areeba_khan",
+      "date": "2026-10-28",
+      "title": "Light exercise (10 min gentle breathing / walk)",
+      "category": "exercise",
+      "completed": false
+    },
+    {
+      "id": "tsk_4",
+      "userId": "user_areeba_khan",
+      "date": "2026-10-28",
+      "title": "Rest & relax (Afternoon 30-min recharge)",
+      "category": "rest",
+      "completed": false
+    },
+    {
+      "id": "tsk_1792664967634_0",
+      "userId": "user_areeba_khan",
+      "date": "2026-10-22",
+      "title": "Take prescribed medication",
+      "category": "medication",
+      "completed": false
+    },
+    {
+      "id": "tsk_1792664967634_1",
+      "userId": "user_areeba_khan",
+      "date": "2026-10-22",
+      "title": "Drink water (Hydration goal: 2 liters)",
+      "category": "hydration",
+      "completed": false
+    },
+    {
+      "id": "tsk_1792664967634_2",
+      "userId": "user_areeba_khan",
+      "date": "2026-10-22",
+      "title": "Light exercise (Gentle stretching or 10-min walk)",
+      "category": "exercise",
+      "completed": false
+    },
+    {
+      "id": "tsk_1792664967634_3",
+      "userId": "user_areeba_khan",
+      "date": "2026-10-22",
+      "title": "Rest & relax (Mindful breathing or nap)",
+      "category": "rest",
+      "completed": false
+    }
+  ],
+  "caregiverPermissions": [
+    {
+      "id": "perm_1",
+      "patientUserId": "user_areeba_khan",
+      "caregiverEmail": "tariq@example.com",
+      "caregiverName": "Tariq Khan",
+      "status": "active",
+      "permissions": {
+        "canViewAppointments": true,
+        "canEditAppointments": true,
+        "canViewJournal": true,
+        "canViewTasks": true
+      },
+      "createdAt": "2026-09-10T12:00:00.000Z"
+    },
+    {
+      "id": "perm_1792666406994_kxlb",
+      "patientUserId": "user_areeba_khan",
+      "caregiverEmail": "helper@example.com",
+      "caregiverName": "Nurse Helper",
+      "status": "revoked",
+      "permissions": {
+        "canViewAppointments": true,
+        "canEditAppointments": false,
+        "canViewJournal": false,
+        "canViewTasks": true
+      },
+      "createdAt": "2026-10-22T10:53:26.994Z"
+    }
+  ],
+  "chatSessions": [
+    {
+      "id": "chat_sample_1",
+      "userId": "user_areeba_khan",
+      "title": "Chemotherapy Side Effects & Management",
+      "createdAt": "2026-10-22T10:00:00.000Z",
+      "updatedAt": "2026-10-22T10:05:00.000Z",
+      "messages": [
+        {
+          "id": "msg_1",
+          "role": "user",
+          "content": "What are some side effects of chemotherapy and how can I manage them?",
+          "timestamp": "2026-10-22T10:00:00.000Z"
+        },
+        {
+          "id": "msg_2",
+          "role": "assistant",
+          "content": "Chemotherapy can cause side effects because it affects rapidly dividing cells, but they vary from person to person. Here are some common ones and evidence-based ways patients manage them:\n\n1. **Nausea & Vomiting**\n   - Take prescribed anti-nausea medications *before* meals or as scheduled, not just after nausea starts.\n   - Eat small, frequent meals rather than large portions.\n   - Stay hydrated with ginger tea, chilled broth, or diluted electrolyte drinks.\n\n2. **Fatigue**\n   - Rest when needed, but pace yourself with light activity (gentle 10-minute walks help maintain stamina).\n   - Prioritize essential tasks and accept support from loved ones.\n   - Maintain a balanced, protein-rich diet to support cellular recovery.\n\n3. **Hair Loss or Thinning**\n   - Use gentle, sulfate-free hair products and soft bristle brushes.\n   - Protect your scalp with soft cotton scarves, beanies, or sun hats.\n   - Consider discussing cold capping with your oncology team if eligible.\n\n4. **Peripheral Neuropathy (Tingling in fingers/toes)**\n   - Protect hands and feet from extreme temperatures (wear gloves when handling frozen foods).\n   - Avoid tight shoes; report any numbness or balance changes promptly.",
+          "sources": [
+            {
+              "title": "Chemotherapy Side Effects Management",
+              "url": "https://www.mayoclinic.org/tests-procedures/chemotherapy/in-depth/chemotherapy-side-effects/art-20047335",
+              "organization": "Mayo Clinic"
+            },
+            {
+              "title": "Managing Chemotherapy Side Effects",
+              "url": "https://www.cancer.org/treatment/treatments-and-side-effects/treatment-types/chemotherapy/chemotherapy-side-effects.html",
+              "organization": "American Cancer Society"
+            },
+            {
+              "title": "Cancer Support & Wellbeing Resources",
+              "url": "https://www.cancerresearchuk.org/about-cancer/coping/physically/chemotherapy",
+              "organization": "Cancer Research UK"
+            }
+          ],
+          "disclaimer": "This information is for educational purposes only and should not replace professional medical advice. Always consult your oncology team for personalized guidance.",
+          "timestamp": "2026-10-22T10:05:00.000Z"
+        }
+      ]
+    },
+    {
+      "id": "chat_1792610226310_apqa",
+      "userId": "user_areeba_khan",
+      "title": "What are common side effects of chemo...",
+      "messages": [
+        {
+          "id": "msg_1792610226310_vmap",
+          "role": "user",
+          "content": "What are common side effects of chemotherapy?",
+          "timestamp": "2026-10-21T19:17:06.310Z"
+        },
+        {
+          "id": "msg_1792610226765_leep",
+          "role": "assistant",
+          "content": "Managing chemotherapy side effects is a foundational part of supportive oncology care. While individual responses depend on your exact regimen and cycle, here are evidence-based recommendations:\n\n1. **Nausea & Appetite Support**\n   - Take your prescribed antiemetics (e.g. ondansetron, prochlorperazine) strictly on schedule as instructed by your team, rather than waiting for nausea to peak.\n   - Favor small, frequent room-temperature snacks (crackers, toast, ginger broths, bananas) over 3 heavy hot meals.\n   - Avoid strong aromas and spicy, greasy foods on infusion days and the subsequent 48 hours.\n\n2. **Fatigue & Energy Preservation**\n   - Cancer-related fatigue is biological, not laziness. Plan demanding activities during your peak energy hours.\n   - Incorporate 5–15 minutes of light, rhythmic movement (like a gentle morning walk) which clinical trials show reduces treatment fatigue more effectively than prolonged bed rest alone.\n   - Protect a steady sleep schedule with resting periods under 45 minutes to avoid disrupting nocturnal sleep.\n\n3. **Infection Prevention**\n   - Check your temperature if you feel chilled, flushed, or unwell. A fever ($ge 38.0^\\circ\\text{C}$ or $100.4^\\circ\\text{F}$) during chemotherapy is an urgent reason to call your oncology triage line immediately.\n   - Wash hands frequently and avoid crowded indoor spaces during nadir periods (usually 7–14 days post-infusion).",
+          "sources": [
+            {
+              "title": "Managing Chemotherapy Side Effects",
+              "url": "https://www.cancer.org/treatment/treatments-and-side-effects/treatment-types/chemotherapy/chemotherapy-side-effects.html",
+              "organization": "American Cancer Society"
+            },
+            {
+              "title": "Chemotherapy and You: Support for People With Cancer",
+              "url": "https://www.cancer.gov/publications/patient-education/chemotherapy-and-you",
+              "organization": "National Cancer Institute"
+            },
+            {
+              "title": "Chemotherapy Side Effects & Prevention Strategies",
+              "url": "https://www.mayoclinic.org/tests-procedures/chemotherapy/in-depth/chemotherapy-side-effects/art-20047335",
+              "organization": "Mayo Clinic"
+            }
+          ],
+          "disclaimer": "CareBridge AI provides educational health information and organizational support. It does not provide medical diagnoses, treatment prescriptions, or emergency triage. Always discuss all treatment decisions and symptoms directly with your oncology team.",
+          "timestamp": "2026-10-21T19:17:06.765Z"
+        }
+      ],
+      "createdAt": "2026-10-21T19:17:06.310Z",
+      "updatedAt": "2026-10-21T19:17:06.765Z"
+    },
+    {
+      "id": "chat_1792654745271_xsh5",
+      "userId": "user_areeba_khan",
+      "title": "What are common side effects of chemo...",
+      "messages": [
+        {
+          "id": "msg_1792654745272_kkyz",
+          "role": "user",
+          "content": "What are common side effects of chemotherapy?",
+          "timestamp": "2026-10-22T07:39:05.272Z"
+        },
+        {
+          "id": "msg_1792654745727_7duq",
+          "role": "assistant",
+          "content": "Managing chemotherapy side effects is a foundational part of supportive oncology care. While individual responses depend on your exact regimen and cycle, here are evidence-based recommendations:\n\n1. **Nausea & Appetite Support**\n   - Take your prescribed antiemetics (e.g. ondansetron, prochlorperazine) strictly on schedule as instructed by your team, rather than waiting for nausea to peak.\n   - Favor small, frequent room-temperature snacks (crackers, toast, ginger broths, bananas) over 3 heavy hot meals.\n   - Avoid strong aromas and spicy, greasy foods on infusion days and the subsequent 48 hours.\n\n2. **Fatigue & Energy Preservation**\n   - Cancer-related fatigue is biological, not laziness. Plan demanding activities during your peak energy hours.\n   - Incorporate 5–15 minutes of light, rhythmic movement (like a gentle morning walk) which clinical trials show reduces treatment fatigue more effectively than prolonged bed rest alone.\n   - Protect a steady sleep schedule with resting periods under 45 minutes to avoid disrupting nocturnal sleep.\n\n3. **Infection Prevention**\n   - Check your temperature if you feel chilled, flushed, or unwell. A fever ($ge 38.0^\\circ\\text{C}$ or $100.4^\\circ\\text{F}$) during chemotherapy is an urgent reason to call your oncology triage line immediately.\n   - Wash hands frequently and avoid crowded indoor spaces during nadir periods (usually 7–14 days post-infusion).",
+          "sources": [
+            {
+              "title": "Managing Chemotherapy Side Effects",
+              "url": "https://www.cancer.org/treatment/treatments-and-side-effects/treatment-types/chemotherapy/chemotherapy-side-effects.html",
+              "organization": "American Cancer Society"
+            },
+            {
+              "title": "Chemotherapy and You: Support for People With Cancer",
+              "url": "https://www.cancer.gov/publications/patient-education/chemotherapy-and-you",
+              "organization": "National Cancer Institute"
+            },
+            {
+              "title": "Chemotherapy Side Effects & Prevention Strategies",
+              "url": "https://www.mayoclinic.org/tests-procedures/chemotherapy/in-depth/chemotherapy-side-effects/art-20047335",
+              "organization": "Mayo Clinic"
+            }
+          ],
+          "disclaimer": "CareBridge AI provides educational health information and organizational support. It does not provide medical diagnoses, treatment prescriptions, or emergency triage. Always discuss all treatment decisions and symptoms directly with your oncology team.",
+          "timestamp": "2026-10-22T07:39:05.727Z"
+        }
+      ],
+      "createdAt": "2026-10-22T07:39:05.271Z",
+      "updatedAt": "2026-10-22T07:39:05.727Z"
+    },
+    {
+      "id": "chat_1792655322180_lzv1",
+      "userId": "user_areeba_khan",
+      "title": "How to manage nausea?",
+      "messages": [
+        {
+          "id": "msg_1792655322180_eik8",
+          "role": "user",
+          "content": "How to manage nausea?",
+          "timestamp": "2026-10-22T07:48:42.180Z"
+        },
+        {
+          "id": "msg_1792655322488_hvee",
+          "role": "assistant",
+          "content": "Managing chemotherapy side effects is a foundational part of supportive oncology care. While individual responses depend on your exact regimen and cycle, here are evidence-based recommendations:\n\n1. **Nausea & Appetite Support**\n   - Take your prescribed antiemetics (e.g. ondansetron, prochlorperazine) strictly on schedule as instructed by your team, rather than waiting for nausea to peak.\n   - Favor small, frequent room-temperature snacks (crackers, toast, ginger broths, bananas) over 3 heavy hot meals.\n   - Avoid strong aromas and spicy, greasy foods on infusion days and the subsequent 48 hours.\n\n2. **Fatigue & Energy Preservation**\n   - Cancer-related fatigue is biological, not laziness. Plan demanding activities during your peak energy hours.\n   - Incorporate 5–15 minutes of light, rhythmic movement (like a gentle morning walk) which clinical trials show reduces treatment fatigue more effectively than prolonged bed rest alone.\n   - Protect a steady sleep schedule with resting periods under 45 minutes to avoid disrupting nocturnal sleep.\n\n3. **Infection Prevention**\n   - Check your temperature if you feel chilled, flushed, or unwell. A fever ($ge 38.0^\\circ\\text{C}$ or $100.4^\\circ\\text{F}$) during chemotherapy is an urgent reason to call your oncology triage line immediately.\n   - Wash hands frequently and avoid crowded indoor spaces during nadir periods (usually 7–14 days post-infusion).",
+          "sources": [
+            {
+              "title": "Managing Chemotherapy Side Effects",
+              "url": "https://www.cancer.org/treatment/treatments-and-side-effects/treatment-types/chemotherapy/chemotherapy-side-effects.html",
+              "organization": "American Cancer Society"
+            },
+            {
+              "title": "Chemotherapy and You: Support for People With Cancer",
+              "url": "https://www.cancer.gov/publications/patient-education/chemotherapy-and-you",
+              "organization": "National Cancer Institute"
+            },
+            {
+              "title": "Chemotherapy Side Effects & Prevention Strategies",
+              "url": "https://www.mayoclinic.org/tests-procedures/chemotherapy/in-depth/chemotherapy-side-effects/art-20047335",
+              "organization": "Mayo Clinic"
+            }
+          ],
+          "disclaimer": "CareBridge AI provides educational health information and organizational support. It does not provide medical diagnoses, treatment prescriptions, or emergency triage. Always discuss all treatment decisions and symptoms directly with your oncology team.",
+          "timestamp": "2026-10-22T07:48:42.488Z"
+        }
+      ],
+      "createdAt": "2026-10-22T07:48:42.180Z",
+      "updatedAt": "2026-10-22T07:48:42.488Z"
+    },
+    {
+      "id": "chat_1792666678698_e8h2",
+      "userId": "user_areeba_khan",
+      "title": "What are practical ways to manage fat...",
+      "messages": [
+        {
+          "id": "msg_1792666678699_b2z4",
+          "role": "user",
+          "content": "What are practical ways to manage fatigue during chemo?",
+          "timestamp": "2026-10-22T10:57:58.699Z"
+        },
+        {
+          "id": "msg_1792666678701_cvff",
+          "role": "assistant",
+          "content": "Managing chemotherapy side effects is a foundational part of supportive oncology care. While individual responses depend on your exact regimen and cycle, here are evidence-based recommendations:\n\n1. **Nausea & Appetite Support**\n   - Take your prescribed antiemetics (e.g. ondansetron, prochlorperazine) strictly on schedule as instructed by your team, rather than waiting for nausea to peak.\n   - Favor small, frequent room-temperature snacks (crackers, toast, ginger broths, bananas) over 3 heavy hot meals.\n   - Avoid strong aromas and spicy, greasy foods on infusion days and the subsequent 48 hours.\n\n2. **Fatigue & Energy Preservation**\n   - Cancer-related fatigue is biological, not laziness. Plan demanding activities during your peak energy hours.\n   - Incorporate 5–15 minutes of light, rhythmic movement (like a gentle morning walk) which clinical trials show reduces treatment fatigue more effectively than prolonged bed rest alone.\n   - Protect a steady sleep schedule with resting periods under 45 minutes to avoid disrupting nocturnal sleep.\n\n3. **Infection Prevention**\n   - Check your temperature if you feel chilled, flushed, or unwell. A fever ($ge 38.0^\\circ\\text{C}$ or $100.4^\\circ\\text{F}$) during chemotherapy is an urgent reason to call your oncology triage line immediately.\n   - Wash hands frequently and avoid crowded indoor spaces during nadir periods (usually 7–14 days post-infusion).",
+          "sources": [
+            {
+              "title": "Managing Chemotherapy Side Effects",
+              "url": "https://www.cancer.org/treatment/treatments-and-side-effects/treatment-types/chemotherapy/chemotherapy-side-effects.html",
+              "organization": "American Cancer Society"
+            },
+            {
+              "title": "Chemotherapy and You: Support for People With Cancer",
+              "url": "https://www.cancer.gov/publications/patient-education/chemotherapy-and-you",
+              "organization": "National Cancer Institute"
+            },
+            {
+              "title": "Chemotherapy Side Effects & Prevention Strategies",
+              "url": "https://www.mayoclinic.org/tests-procedures/chemotherapy/in-depth/chemotherapy-side-effects/art-20047335",
+              "organization": "Mayo Clinic"
+            }
+          ],
+          "disclaimer": "CareBridge AI provides educational health information and organizational support. It does not provide medical diagnoses, treatment prescriptions, or emergency triage. Always discuss all treatment decisions and symptoms directly with your oncology team.",
+          "timestamp": "2026-10-22T10:57:58.701Z"
+        }
+      ],
+      "createdAt": "2026-10-22T10:57:58.698Z",
+      "updatedAt": "2026-10-22T10:57:58.701Z"
+    }
+  ],
+  "visitSummaries": [
+    {
+      "id": "sum_1",
+      "userId": "user_areeba_khan",
+      "appointmentId": "apt_1",
+      "appointmentTitle": "Cycle 2 Follow-up & Review",
+      "doctorName": "Dr. Saman Ali (Oncologist)",
+      "appointmentDate": "2026-10-28",
+      "chiefConcerns": "Checking blood counts following Cycle 2 and reviewing mild intermittent nausea.",
+      "symptomsSummary": "Mild nausea recorded on Oct 27 (severity 3/10) managed with antiemetic; slight headache on Oct 25; mild tingling in fingers noted on Oct 20 when touching cold objects.",
+      "currentMedications": [
+        "Paclitaxel (IV scheduled)",
+        "Ondansetron 8mg PRN",
+        "Dexamethasone pre-medication",
+        "Multivitamin"
+      ],
+      "questionsForDoctor": [
+        "What are the next steps in my treatment plan?",
+        "Are there any dietary changes or supplements I should consider for fatigue?",
+        "What side effects should I specifically monitor after Cycle 2?",
+        "When should I contact the on-call oncology team immediately versus waiting?",
+        "Are my blood counts recovering adequately on this regimen?"
+      ],
+      "patientNotes": "Feeling emotionally supported by Tariq. Walking daily has helped with mood.",
+      "createdAt": "2026-10-27T20:00:00.000Z"
+    }
+  ],
+  "passwordResetTokens": []
+}

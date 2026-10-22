@@ -1,0 +1,6 @@
+{
+  "name": "CareBridge AI",
+  "description": "An AI-powered cancer support companion for patients, caregivers, and healthcare teams to organize care, track symptoms, and prepare for doctor visits.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
