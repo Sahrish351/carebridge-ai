@@ -24,7 +24,6 @@ export const SymptomJournalPage: React.FC<SymptomJournalPageProps> = ({ onNaviga
   const [entries, setEntries] = useState<JournalEntry[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Form State
   const [date, setDate] = useState('2026-10-28');
   const [selectedMood, setSelectedMood] = useState<JournalEntry['mood']>('okay');
   const [severity, setSeverity] = useState(3);
@@ -96,7 +95,6 @@ export const SymptomJournalPage: React.FC<SymptomJournalPageProps> = ({ onNaviga
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 3000);
 
-      // Reset form fields
       setNotes('');
       setSeverity(3);
       await loadEntries();
@@ -116,7 +114,6 @@ export const SymptomJournalPage: React.FC<SymptomJournalPageProps> = ({ onNaviga
     }
   };
 
-  // Severity label generator
   const getSeverityLabel = (val: number) => {
     if (val <= 2) return '1–2 (Very Mild)';
     if (val <= 4) return '3–4 (Mild Discomfort)';
@@ -127,7 +124,6 @@ export const SymptomJournalPage: React.FC<SymptomJournalPageProps> = ({ onNaviga
 
   return (
     <div className="space-y-8 pb-12">
-      {/* Page Header matching visual reference */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
@@ -148,8 +144,6 @@ export const SymptomJournalPage: React.FC<SymptomJournalPageProps> = ({ onNaviga
           <span>New Entry</span>
         </button>
       </div>
-
-      {/* Mood Selector Row (Great, Good, Okay, Bad, Very Bad) matching visual reference */}
       <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-xs space-y-4">
         <div className="flex items-center justify-between">
           <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
@@ -160,7 +154,7 @@ export const SymptomJournalPage: React.FC<SymptomJournalPageProps> = ({ onNaviga
           </span>
         </div>
 
-        <div className="grid grid-cols-5 gap-2 sm:gap-4">
+        <div className="grid grid-cols-5 gap-1.5 sm:gap-4">
           {moods.map((m) => {
             const isSelected = selectedMood === m.id;
             return (
@@ -168,23 +162,20 @@ export const SymptomJournalPage: React.FC<SymptomJournalPageProps> = ({ onNaviga
                 key={m.id}
                 type="button"
                 onClick={() => setSelectedMood(m.id)}
-                className={`p-3 sm:p-4 rounded-2xl border-2 flex flex-col items-center justify-center gap-1.5 transition-all transform hover:scale-102 ${
+                className={`p-2 sm:p-4 rounded-2xl border-2 flex flex-col items-center justify-center gap-1 transition-all transform hover:scale-102 cursor-pointer ${
                   isSelected
                     ? `${m.color} shadow-sm font-bold scale-105`
                     : 'border-slate-200 bg-slate-50/50 hover:bg-slate-100 text-slate-600'
                 }`}
               >
-                <span className="text-2xl sm:text-3xl">{m.emoji}</span>
-                <span className="text-xs">{m.label}</span>
+                <span className="text-xl sm:text-3xl">{m.emoji}</span>
+                <span className="text-[10px] sm:text-xs truncate max-w-full">{m.label}</span>
               </button>
             );
           })}
         </div>
       </div>
-
-      {/* Main Layout: History on Left (7 cols), Add New Entry on Right (5 cols) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* Left Column: Chronological History (7 cols) */}
         <div className="lg:col-span-7 space-y-6">
           <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-xs space-y-4">
             <div className="flex items-center justify-between">
@@ -193,8 +184,6 @@ export const SymptomJournalPage: React.FC<SymptomJournalPageProps> = ({ onNaviga
                 {entries.length} logged records
               </span>
             </div>
-
-            {/* Accessible Trend Summary & SVG Chart */}
             {entries.length > 0 && (
               <div className="p-4 bg-gradient-to-r from-indigo-50/90 via-purple-50/70 to-rose-50/50 rounded-2xl border border-indigo-100 space-y-3 text-xs">
                 <div className="flex items-center justify-between text-indigo-900">
@@ -211,23 +200,17 @@ export const SymptomJournalPage: React.FC<SymptomJournalPageProps> = ({ onNaviga
                     Generate Visit Prep →
                   </button>
                 </div>
-
-                {/* SVG Trend Graph (rendered when at least 2 entries exist) */}
                 {entries.length >= 2 && (
                   <div className="pt-2 pb-1">
                     <div className="h-24 w-full relative">
                       <svg className="w-full h-full overflow-visible" viewBox="0 0 500 80" preserveAspectRatio="none">
-                        {/* Background guide lines */}
                         <line x1="0" y1="10" x2="500" y2="10" stroke="#E2E8F0" strokeDasharray="3 3" />
                         <line x1="0" y1="40" x2="500" y2="40" stroke="#E2E8F0" strokeDasharray="3 3" />
                         <line x1="0" y1="70" x2="500" y2="70" stroke="#E2E8F0" strokeDasharray="3 3" />
-
-                        {/* Line & points */}
                         {(() => {
                           const chartEntries = [...entries].reverse().slice(-7);
                           const points = chartEntries.map((e, idx) => {
                             const x = (idx / (chartEntries.length - 1 || 1)) * 480 + 10;
-                            // Severity 1 to 10 mapped to y 70 to 10
                             const y = 70 - ((e.severity - 1) / 9) * 60;
                             return { x, y, e };
                           });
@@ -269,9 +252,9 @@ export const SymptomJournalPage: React.FC<SymptomJournalPageProps> = ({ onNaviga
                     key={entry.id}
                     className="p-4 rounded-2xl bg-slate-50 border border-slate-200/90 hover:border-indigo-200 transition-all space-y-2"
                   >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-bold text-slate-900">{entry.date}</span>
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                        <span className="text-xs sm:text-sm font-bold text-slate-900">{entry.date}</span>
                         <span className="text-slate-300">·</span>
                         <span className="text-xs font-semibold text-slate-700 flex items-center gap-1">
                           <span>{moodObj?.emoji}</span>
@@ -284,7 +267,7 @@ export const SymptomJournalPage: React.FC<SymptomJournalPageProps> = ({ onNaviga
 
                       <button
                         onClick={() => handleDeleteEntry(entry.id)}
-                        className="text-slate-400 hover:text-rose-600 p-1 rounded-lg"
+                        className="text-slate-400 hover:text-rose-600 p-1 rounded-lg cursor-pointer shrink-0"
                         title="Delete log"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -323,8 +306,6 @@ export const SymptomJournalPage: React.FC<SymptomJournalPageProps> = ({ onNaviga
             </div>
           </div>
         </div>
-
-        {/* Right Column: Add New Entry Form (5 cols) matching visual reference */}
         <div id="entry-form" className="lg:col-span-5">
           <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-xs space-y-5">
             <h2 className="text-lg font-bold text-slate-900">Add New Entry</h2>

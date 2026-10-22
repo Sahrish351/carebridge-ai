@@ -119,7 +119,6 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({ onNavigate }) => {
 
   return (
     <div className="max-w-4xl mx-auto space-y-8 pb-16">
-      {/* Header */}
       <div>
         <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2.5">
           <Settings className="w-6 h-6 text-indigo-600" />
@@ -136,10 +135,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({ onNavigate }) => {
           <span>{saveStatus}</span>
         </div>
       )}
-
-      {/* Main Settings Form */}
       <form onSubmit={handleSaveProfile} className="space-y-6">
-        {/* Profile Card */}
         <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xs space-y-5">
           <div className="flex items-center gap-2 text-sm font-bold text-slate-900">
             <UserIcon className="w-4 h-4 text-indigo-600" />
@@ -168,8 +164,6 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({ onNavigate }) => {
             </div>
           </div>
         </div>
-
-        {/* Treatment Plan Config (for Patients) */}
         <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xs space-y-5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-sm font-bold text-slate-900">
@@ -224,8 +218,6 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({ onNavigate }) => {
             </div>
           </div>
         </div>
-
-        {/* Language & Accessibility */}
         <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xs space-y-5">
           <div className="flex items-center gap-2 text-sm font-bold text-slate-900">
             <Languages className="w-4 h-4 text-indigo-600" />
@@ -292,8 +284,6 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({ onNavigate }) => {
           Save All Preferences
         </button>
       </form>
-
-      {/* Privacy & Data Ownership Section */}
       <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xs space-y-5">
         <div className="flex items-center gap-2 text-sm font-bold text-slate-900">
           <Shield className="w-4 h-4 text-emerald-600" />

@@ -10,7 +10,6 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
     <footer className="bg-slate-900 text-slate-300 pt-16 pb-12 border-t border-slate-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 pb-12 border-b border-slate-800">
-          {/* Brand & Mission */}
           <div className="lg:col-span-2 space-y-4">
             <div className="flex items-center gap-2.5">
               <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-500 to-rose-400 flex items-center justify-center text-white">
@@ -28,8 +27,6 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               <Heart className="w-4 h-4 fill-rose-300 text-rose-300 inline" />
             </div>
           </div>
-
-          {/* Quick Links */}
           <div>
             <h4 className="text-xs font-semibold tracking-wider text-slate-200 uppercase mb-4">
               Quick Links
@@ -85,8 +82,6 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               </li>
             </ul>
           </div>
-
-          {/* Key Capabilities */}
           <div>
             <h4 className="text-xs font-semibold tracking-wider text-slate-200 uppercase mb-4">
               Care Tools
@@ -134,8 +129,6 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               </li>
             </ul>
           </div>
-
-          {/* Contact Info */}
           <div>
             <h4 className="text-xs font-semibold tracking-wider text-slate-200 uppercase mb-4">
               Contact Info
@@ -160,33 +153,29 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
             </ul>
           </div>
         </div>
-
-        {/* Disclaimer Notice */}
         <div className="py-6 border-b border-slate-800/60 text-xs text-slate-400 leading-relaxed">
           <p>
             <strong className="text-slate-300">Medical & Safety Notice:</strong> CareBridge AI is an organization and educational support platform for cancer patients and caregivers. It is not a medical device, diagnostic system, or treatment prescribing tool. Always consult your oncologist or licensed physician for personal medical decisions. If you have fever &ge; 100.4&deg;F (38.0&deg;C), severe pain, or shortness of breath, contact your oncology triage line or local emergency services immediately.
           </p>
         </div>
-
-        {/* Bottom bar */}
         <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
-          <p>© 2026 CareBridge AI. All rights reserved.</p>
-          <div className="flex items-center gap-6">
+          <p className="text-center sm:text-left">© 2026 CareBridge AI. All rights reserved.</p>
+          <div className="flex flex-wrap items-center justify-center sm:justify-end gap-4 sm:gap-6">
             <button
               onClick={() => onNavigate('privacy-policy')}
-              className="hover:text-slate-300 transition-colors"
+              className="hover:text-slate-300 transition-colors cursor-pointer"
             >
               Privacy Policy
             </button>
             <button
               onClick={() => onNavigate('terms-of-service')}
-              className="hover:text-slate-300 transition-colors"
+              className="hover:text-slate-300 transition-colors cursor-pointer"
             >
               Terms of Service
             </button>
             <button
               onClick={() => onNavigate('about')}
-              className="hover:text-slate-300 transition-colors"
+              className="hover:text-slate-300 transition-colors cursor-pointer"
             >
               Clinical Boundaries
             </button>

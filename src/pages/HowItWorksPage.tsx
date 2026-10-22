@@ -160,7 +160,6 @@ export const HowItWorksPage: React.FC<HowItWorksPageProps> = ({ onNavigate }) =>
 
   return (
     <div className="bg-[#F8FAFD] min-h-screen pb-24">
-      {/* 1. Header & Hero */}
       <section className="relative pt-12 pb-16 overflow-hidden border-b border-slate-200/80 bg-white">
         <div className="absolute top-0 right-1/4 w-96 h-96 bg-indigo-50/60 rounded-full blur-3xl pointer-events-none -z-10" />
         <div className="absolute bottom-0 left-10 w-80 h-80 bg-rose-50/50 rounded-full blur-3xl pointer-events-none -z-10" />
@@ -194,8 +193,6 @@ export const HowItWorksPage: React.FC<HowItWorksPageProps> = ({ onNavigate }) =>
           </div>
         </div>
       </section>
-
-      {/* 2. Interactive 7-Step Visual Journey */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16">
         <div className="text-center max-w-2xl mx-auto mb-12">
           <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
@@ -205,8 +202,6 @@ export const HowItWorksPage: React.FC<HowItWorksPageProps> = ({ onNavigate }) =>
             Click any step to inspect the realistic workflow and see how CareBridge AI simplifies each moment.
           </p>
         </div>
-
-        {/* Step Selector Ribbon */}
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2.5 mb-10">
           {steps.map((s) => {
             const Icon = s.icon;
@@ -246,15 +241,12 @@ export const HowItWorksPage: React.FC<HowItWorksPageProps> = ({ onNavigate }) =>
             );
           })}
         </div>
-
-        {/* Active Step Detailed Showcase Box */}
         {(() => {
           const current = steps.find((s) => s.step === activeStep) || steps[0];
           const StepIcon = current.icon;
           return (
             <div className="bg-white rounded-3xl border border-slate-200/90 shadow-xl overflow-hidden grid grid-cols-1 lg:grid-cols-12 mb-16">
-              {/* Left Column: Context & Narrative */}
-              <div className="lg:col-span-7 p-8 sm:p-10 flex flex-col justify-between space-y-6">
+              <div className="lg:col-span-7 p-5 sm:p-10 flex flex-col justify-between space-y-6">
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
                     <span className="w-10 h-10 rounded-2xl bg-indigo-600 text-white font-extrabold flex items-center justify-center text-base shadow-sm">
@@ -311,8 +303,6 @@ export const HowItWorksPage: React.FC<HowItWorksPageProps> = ({ onNavigate }) =>
                   </div>
                 </div>
               </div>
-
-              {/* Right Column: Realistic Application Preview Component */}
               <div className="lg:col-span-5 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 p-8 text-white flex flex-col justify-center relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none" />
 
@@ -487,8 +477,6 @@ export const HowItWorksPage: React.FC<HowItWorksPageProps> = ({ onNavigate }) =>
           );
         })()}
       </section>
-
-      {/* 3. Visual Timeline: The Full Sequential Roadmap */}
       <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center mb-12">
           <span className="text-xs font-bold text-indigo-600 uppercase tracking-wider">
@@ -504,7 +492,6 @@ export const HowItWorksPage: React.FC<HowItWorksPageProps> = ({ onNavigate }) =>
             const Icon = st.icon;
             return (
               <div key={st.step} className="relative group">
-                {/* Timeline node icon */}
                 <div className="absolute -left-[35px] sm:-left-[43px] top-1.5 w-9 h-9 rounded-full bg-white border-2 border-indigo-600 text-indigo-600 flex items-center justify-center font-bold text-xs shadow-xs group-hover:bg-indigo-600 group-hover:text-white transition-colors">
                   {st.step}
                 </div>
@@ -531,8 +518,6 @@ export const HowItWorksPage: React.FC<HowItWorksPageProps> = ({ onNavigate }) =>
           })}
         </div>
       </section>
-
-      {/* 4. Explore the Features Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-16">
         <div className="bg-white rounded-3xl border border-slate-200/90 shadow-md p-8 sm:p-12">
           <div className="max-w-2xl mb-10">
@@ -582,8 +567,6 @@ export const HowItWorksPage: React.FC<HowItWorksPageProps> = ({ onNavigate }) =>
                 </div>
               );
             })}
-
-            {/* Quick Summary Card */}
             <div className="bg-gradient-to-br from-indigo-900 to-purple-900 text-white rounded-2xl p-6 flex flex-col justify-between">
               <div className="space-y-3">
                 <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-rose-300">
@@ -606,8 +589,6 @@ export const HowItWorksPage: React.FC<HowItWorksPageProps> = ({ onNavigate }) =>
           </div>
         </div>
       </section>
-
-      {/* 5. Clear Final Call to Action */}
       <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-8">
         <div className="bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-700 rounded-3xl p-10 text-white shadow-xl space-y-6">
           <div className="w-12 h-12 rounded-2xl bg-white/15 mx-auto flex items-center justify-center">

@@ -87,35 +87,32 @@ export const ForgotPasswordPage: React.FC<ForgotPasswordPageProps> = ({ onNaviga
 
   return (
     <div className="min-h-screen bg-[#F8FAFD] flex flex-col justify-between py-6 px-4 sm:px-6 lg:px-8">
-      {/* 1. Standalone Top Navigation Header */}
-      <div className="w-full max-w-5xl mx-auto flex items-center justify-between pb-4">
+      <div className="w-full max-w-5xl mx-auto flex items-center justify-between pb-4 gap-2">
         <button
           onClick={() => onNavigate('home')}
-          className="flex items-center gap-2.5 text-left group focus:outline-none cursor-pointer"
+          className="flex items-center gap-2 sm:gap-2.5 text-left group focus:outline-none cursor-pointer shrink-0"
         >
-          <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-rose-400 flex items-center justify-center text-white shadow-xs group-hover:scale-105 transition-transform duration-200">
-            <Heart className="w-5 h-5 fill-white/90" />
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-rose-400 flex items-center justify-center text-white shadow-xs group-hover:scale-105 transition-transform duration-200 shrink-0">
+            <Heart className="w-4.5 h-4.5 sm:w-5 sm:h-5 fill-white/90" />
           </div>
           <div className="flex flex-col">
-            <span className="text-xl font-bold tracking-tight text-slate-900 leading-none">
+            <span className="text-lg sm:text-xl font-bold tracking-tight text-slate-900 leading-none">
               CareBridge <span className="text-indigo-600">AI</span>
             </span>
-            <span className="text-[11px] text-slate-400 font-medium mt-0.5">Cancer Care Companion</span>
+            <span className="text-[10px] sm:text-[11px] text-slate-400 font-medium mt-0.5">Cancer Care Companion</span>
           </div>
         </button>
 
         <button
           onClick={() => onNavigate('home')}
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-indigo-600 transition-colors cursor-pointer py-1.5 px-3 rounded-xl hover:bg-slate-100"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-indigo-600 transition-colors cursor-pointer py-1.5 px-2.5 sm:px-3 rounded-xl hover:bg-slate-100 shrink-0"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
-          <span>Back to Home</span>
+          <span>Back</span>
         </button>
       </div>
-
-      {/* 2. Centered Card Form */}
       <div className="w-full max-w-xl mx-auto my-auto">
-        <div className="bg-white rounded-3xl shadow-xl shadow-indigo-100/70 border border-slate-200/90 p-8 sm:p-10 space-y-6">
+        <div className="bg-white rounded-3xl shadow-xl shadow-indigo-100/70 border border-slate-200/90 p-5 sm:p-8 lg:p-10 space-y-6">
           <div className="text-center space-y-2">
             <div className="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-100 text-indigo-600 flex items-center justify-center mx-auto">
               <KeyRound className="w-6 h-6" />
@@ -145,8 +142,6 @@ export const ForgotPasswordPage: React.FC<ForgotPasswordPageProps> = ({ onNaviga
               <span>{statusMessage}</span>
             </div>
           )}
-
-          {/* Step 1: Request Reset */}
           {step === 'request' && (
             <form onSubmit={handleRequestReset} className="space-y-4">
               <div>
@@ -175,8 +170,6 @@ export const ForgotPasswordPage: React.FC<ForgotPasswordPageProps> = ({ onNaviga
               </button>
             </form>
           )}
-
-          {/* Step 2: Set New Password */}
           {step === 'reset' && (
             <form onSubmit={handleApplyNewPassword} className="space-y-4">
               <div>
@@ -229,8 +222,6 @@ export const ForgotPasswordPage: React.FC<ForgotPasswordPageProps> = ({ onNaviga
               </button>
             </form>
           )}
-
-          {/* Step 3: Success Screen */}
           {step === 'completed' && (
             <div className="text-center space-y-4 pt-2">
               <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto">
@@ -248,8 +239,6 @@ export const ForgotPasswordPage: React.FC<ForgotPasswordPageProps> = ({ onNaviga
               </button>
             </div>
           )}
-
-          {/* Links */}
           <div className="flex items-center justify-between text-xs text-slate-500 pt-4 border-t border-slate-100">
             <button
               onClick={() => onNavigate('login')}
@@ -266,8 +255,6 @@ export const ForgotPasswordPage: React.FC<ForgotPasswordPageProps> = ({ onNaviga
           </div>
         </div>
       </div>
-
-      {/* 3. Small Clean Copyright & Privacy Note Only */}
       <div className="w-full max-w-5xl mx-auto pt-6 text-center text-xs text-slate-400">
         <p>© 2026 CareBridge AI · CodeTheCure Hackathon · Patient Dignity & Privacy First</p>
       </div>

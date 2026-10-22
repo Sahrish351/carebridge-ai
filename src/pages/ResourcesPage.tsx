@@ -113,7 +113,6 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onNavigate }) => {
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12">
-      {/* Page Header */}
       <div className="text-center max-w-3xl mx-auto space-y-4">
         <span className="inline-block px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-xs font-bold tracking-wide uppercase">
           Verified Evidence
@@ -125,8 +124,6 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onNavigate }) => {
           Curated clinical education from the world’s leading oncology institutions. Every resource is verified for accuracy, plain language, and patient safety.
         </p>
       </div>
-
-      {/* Search & Category Filter Controls */}
       <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
         <div className="relative">
           <Search className="w-5 h-5 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
@@ -146,8 +143,6 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onNavigate }) => {
             </button>
           )}
         </div>
-
-        {/* Category Pills/Tabs */}
         <div className="flex items-center gap-2 overflow-x-auto pb-1 pt-1 text-xs">
           {categories.map((cat) => (
             <button
@@ -164,8 +159,6 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onNavigate }) => {
           ))}
         </div>
       </div>
-
-      {/* Resources Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {filteredResources.map((item) => (
           <div
@@ -228,8 +221,6 @@ export const ResourcesPage: React.FC<ResourcesPageProps> = ({ onNavigate }) => {
           </button>
         </div>
       )}
-
-      {/* Ask AI about these resources banner */}
       <div className="p-6 bg-gradient-to-r from-purple-50 via-indigo-50 to-rose-50 rounded-2xl border border-indigo-100 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="space-y-1 text-center sm:text-left">
           <p className="text-sm font-bold text-slate-900 flex items-center gap-1.5 justify-center sm:justify-start">

@@ -93,14 +93,12 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
 
   return (
     <div className="bg-[#F8FAFD] min-h-screen pb-24">
-      {/* 1. HERO SECTION WITH MEANINGFUL HEADING AND HEALTHCARE VISUAL */}
       <section className="relative pt-12 pb-16 overflow-hidden bg-white border-b border-slate-200/80">
         <div className="absolute top-0 right-1/4 w-96 h-96 bg-indigo-50/50 rounded-full blur-3xl pointer-events-none -z-10" />
         <div className="absolute bottom-0 left-10 w-80 h-80 bg-rose-50/40 rounded-full blur-3xl pointer-events-none -z-10" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            {/* Left Column: Heading and Editorial Narrative */}
             <div className="lg:col-span-7 space-y-6">
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-700 text-xs font-bold tracking-wider uppercase">
                 <span>Our Mission & Purpose · CodeTheCure 2026</span>
@@ -130,8 +128,6 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
                 </span>
               </div>
             </div>
-
-            {/* Right Column: Meaningful Healthcare Image */}
             <div className="lg:col-span-5 relative">
               <div className="relative mx-auto max-w-md">
                 <div className="rounded-3xl overflow-hidden bg-gradient-to-tr from-indigo-50 via-white to-rose-50 p-3 sm:p-4 shadow-xl border border-indigo-100/70">
@@ -160,8 +156,6 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
           </div>
         </div>
       </section>
-
-      {/* 2. THE PROBLEM CAREBRIDGE AI AIMS TO SOLVE */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16">
         <div className="bg-white rounded-3xl border border-slate-200/90 shadow-xs p-8 sm:p-12">
           <div className="max-w-3xl mb-10">
@@ -215,11 +209,8 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
           </div>
         </div>
       </section>
-
-      {/* 3. PRODUCT MISSION AND VISION */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
-          {/* Mission Box */}
           <div className="bg-gradient-to-br from-indigo-900 via-indigo-800 to-purple-900 text-white rounded-3xl p-8 sm:p-10 shadow-lg flex flex-col justify-between space-y-6">
             <div className="space-y-4">
               <span className="inline-block px-3 py-1 rounded-full bg-white/10 text-indigo-200 text-xs font-bold uppercase tracking-wider">
@@ -238,8 +229,6 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
               <span>Created for the CodeTheCure 2026 Patient Support Track</span>
             </div>
           </div>
-
-          {/* Vision Box */}
           <div className="bg-white rounded-3xl p-8 sm:p-10 border border-slate-200/90 shadow-xs flex flex-col justify-between space-y-6">
             <div className="space-y-4">
               <span className="inline-block px-3 py-1 rounded-full bg-purple-50 text-purple-700 text-xs font-bold uppercase tracking-wider">
@@ -260,8 +249,6 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
           </div>
         </div>
       </section>
-
-      {/* 4. CORE PRINCIPLES */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16">
         <div className="text-center max-w-2xl mx-auto mb-12">
           <span className="text-xs font-bold text-indigo-600 uppercase tracking-wider">
@@ -309,8 +296,6 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
           })}
         </div>
       </section>
-
-      {/* 5. WHO THE PLATFORM IS DESIGNED FOR */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16">
         <div className="text-center max-w-2xl mx-auto mb-12">
           <span className="text-xs font-bold text-indigo-600 uppercase tracking-wider">
@@ -371,8 +356,6 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
           })}
         </div>
       </section>
-
-      {/* 6. ETHICAL BOUNDARIES & CLINICAL LIMITATIONS */}
       <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-16">
         <div className="bg-amber-50/70 rounded-3xl border border-amber-200/90 p-8 sm:p-10 space-y-6">
           <div className="flex items-center gap-3 text-amber-900">
@@ -400,8 +383,6 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
           </div>
         </div>
       </section>
-
-      {/* 7. FINAL CALL TO ACTION */}
       <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 text-center">
         <div className="bg-white rounded-3xl border border-slate-200/90 shadow-md p-10 space-y-6">
           <div className="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-100 mx-auto flex items-center justify-center text-indigo-600">

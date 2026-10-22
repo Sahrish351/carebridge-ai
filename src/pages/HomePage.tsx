@@ -152,41 +152,31 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
 
   return (
     <div className="space-y-24 pb-20">
-      {/* 1. HERO SECTION WITH BALANCED TWO-COLUMN LAYOUT */}
       <section className="relative pt-8 md:pt-14 pb-12 overflow-hidden">
-        {/* Soft, warm ambient backdrops */}
         <div className="absolute top-0 right-1/4 w-[480px] h-[480px] bg-gradient-to-br from-indigo-100/40 via-purple-100/30 to-transparent rounded-full blur-3xl pointer-events-none -z-10" />
         <div className="absolute top-1/4 left-6 w-[420px] h-[420px] bg-gradient-to-tr from-rose-100/30 via-pink-50/20 to-transparent rounded-full blur-3xl pointer-events-none -z-10" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
-            {/* Left Column: Clear Value Proposition */}
             <div className="lg:col-span-7 space-y-6">
-              {/* Eyebrow */}
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-50/90 border border-indigo-100 shadow-2xs">
                 <span className="text-indigo-700 text-xs font-bold tracking-wider uppercase">
                   COMPASSIONATE SUPPORT. SMARTER CARE.
                 </span>
               </div>
-
-              {/* Main Headline */}
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight leading-[1.15]">
                 Your Cancer Journey,{' '}
                 <span className="text-indigo-600">
                   Made Easier.
                 </span>
               </h1>
-
-              {/* Supporting Text */}
               <p className="text-lg sm:text-xl text-slate-600 max-w-xl font-normal leading-relaxed">
                 Organize appointments, understand trusted health information, and prepare for conversations with your care team — all in one supportive place.
               </p>
-
-              {/* CTAs */}
-              <div className="flex flex-wrap items-center gap-4 pt-2">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
                 <button
                   onClick={() => onNavigate(user ? 'dashboard' : 'signup')}
-                  className="px-8 py-3.5 text-base font-bold text-white bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 rounded-2xl shadow-md shadow-indigo-200 transition-all transform hover:-translate-y-0.5 flex items-center gap-2.5 cursor-pointer"
+                  className="w-full sm:w-auto px-7 py-3.5 text-base font-bold text-white bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 rounded-2xl shadow-md shadow-indigo-200 transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-2.5 cursor-pointer"
                 >
                   <span>{user ? 'Open Patient Workspace' : 'Get Started'}</span>
                   <ArrowRight className="w-4.5 h-4.5" />
@@ -194,13 +184,11 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
 
                 <button
                   onClick={() => onNavigate('how-it-works')}
-                  className="px-6 py-3.5 text-base font-semibold text-slate-700 hover:text-indigo-600 bg-white hover:bg-slate-50 border border-slate-200/90 rounded-2xl shadow-xs transition-all flex items-center gap-2 cursor-pointer"
+                  className="w-full sm:w-auto px-6 py-3.5 text-base font-semibold text-slate-700 hover:text-indigo-600 bg-white hover:bg-slate-50 border border-slate-200/90 rounded-2xl shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <span>Explore How It Works</span>
                 </button>
               </div>
-
-              {/* Small Trust Statement Beneath Buttons */}
               <div className="pt-2 text-xs text-slate-500 flex items-center gap-2">
                 <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
                 <span>
@@ -208,19 +196,13 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                 </span>
               </div>
             </div>
-
-            {/* Right Column: High-Quality Visual Composition */}
             <div className="lg:col-span-5 relative">
               <div className="relative mx-auto max-w-md">
-                {/* Decorative Soft Glow Container */}
                 <div className="relative rounded-3xl overflow-hidden bg-gradient-to-tr from-indigo-50/80 via-white to-rose-50/80 p-3 sm:p-4 shadow-xl border border-indigo-100/70">
-                  {/* Floating Script Accent Badge */}
                   <div className="absolute top-6 right-6 bg-white/95 backdrop-blur-md px-3.5 py-1.5 rounded-full shadow-md border border-rose-100 flex items-center gap-1.5 text-xs font-semibold text-rose-600 z-10">
                     <Heart className="w-3.5 h-3.5 fill-rose-500 text-rose-500" />
                     <span className="font-script text-base">Stronger Together ♡</span>
                   </div>
-
-                  {/* Clean Healthcare Support Photograph Frame */}
                   <div className="rounded-2xl overflow-hidden bg-slate-100 aspect-4/3 relative flex items-center justify-center">
                     <img
                       src="/assets/hero_patient_clean.png"
@@ -228,8 +210,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                       className="w-full h-full object-cover object-top"
                     />
                   </div>
-
-                  {/* Supportive Reassurance Bar */}
                   <div className="mt-3.5 p-3.5 bg-gradient-to-r from-indigo-900 via-indigo-800 to-purple-900 text-white rounded-2xl flex items-center justify-between shadow-sm">
                     <div className="flex items-center gap-2.5">
                       <div className="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center text-rose-300 shrink-0">
@@ -248,8 +228,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                     </button>
                   </div>
                 </div>
-
-                {/* Subtle trust tags */}
                 <div className="mt-3 flex items-center justify-between px-2 text-[11px] text-slate-500 font-medium">
                   <span className="flex items-center gap-1">
                     <Lock className="w-3.5 h-3.5 text-indigo-500" />
@@ -263,8 +241,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
               </div>
             </div>
           </div>
-
-          {/* Quick Feature Navigation Pills */}
           <div className="mt-14 pt-8 border-t border-slate-200/80 grid grid-cols-2 sm:grid-cols-4 gap-4">
             {quickFeaturePills.map((feat, idx) => {
               const Icon = feat.icon;
@@ -285,8 +261,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
           </div>
         </div>
       </section>
-
-      {/* 2. CLINICAL SOURCES & PARTNERS TICKER */}
       <section className="border-y border-slate-200/80 bg-slate-50/60 py-7">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
@@ -316,8 +290,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
           </div>
         </div>
       </section>
-
-      {/* 2. A WARM, SUPPORTIVE INTRODUCTION */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-3xl p-8 sm:p-12 border border-slate-200/90 shadow-xs grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
           <div className="lg:col-span-7 space-y-5">
@@ -370,8 +342,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
           </div>
         </div>
       </section>
-
-      {/* 3. EXPLORE THE FEATURES (VARIED VISUAL DESIGNS) */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-12 space-y-3">
           <span className="inline-block px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-xs font-bold tracking-wide uppercase">
@@ -386,7 +356,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {/* Card 1: Care Planner with calendar highlight */}
           <div className="bg-white rounded-3xl p-6 border border-indigo-100 shadow-xs hover:shadow-lg transition-all flex flex-col justify-between group">
             <div className="space-y-4">
               <div className="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 border border-indigo-100 flex items-center justify-center">
@@ -401,8 +370,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                   Keep track of medical appointments, chemotherapy cycles, and rest periods in one unified view.
                 </p>
               </div>
-
-              {/* Unique Visual Snippet: Mini Calendar Schedule Pill */}
               <div className="bg-indigo-50/70 p-3 rounded-2xl border border-indigo-100/80 text-xs space-y-1">
                 <div className="flex items-center justify-between text-[11px] font-bold text-indigo-900">
                   <span>Cycle 4 · Day 1</span>
@@ -422,8 +389,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
               </button>
             </div>
           </div>
-
-          {/* Card 2: AI Health Assistant with conversational snippet */}
           <div className="bg-white rounded-3xl p-6 border border-purple-100 shadow-xs hover:shadow-lg transition-all flex flex-col justify-between group">
             <div className="space-y-4">
               <div className="w-12 h-12 rounded-2xl bg-purple-50 text-purple-600 border border-purple-100 flex items-center justify-center">
@@ -438,8 +403,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                   Plain-language oncology education grounded in NCI, ACS, and Mayo Clinic literature.
                 </p>
               </div>
-
-              {/* Unique Visual Snippet: Question & Verified Badge */}
               <div className="bg-purple-50/70 p-3 rounded-2xl border border-purple-100/80 text-xs space-y-1">
                 <p className="text-[11px] text-purple-950 font-semibold italic">"Tips for taste changes?"</p>
                 <div className="flex items-center gap-1 text-[10px] text-purple-700 font-bold">
@@ -459,8 +422,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
               </button>
             </div>
           </div>
-
-          {/* Card 3: Symptom Journal with mood/energy selector preview */}
           <div className="bg-white rounded-3xl p-6 border border-rose-100 shadow-xs hover:shadow-lg transition-all flex flex-col justify-between group">
             <div className="space-y-4">
               <div className="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 border border-rose-100 flex items-center justify-center">
@@ -475,8 +436,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                   Log your daily symptoms, energy levels, and emotional wellbeing over time without clinical complexity.
                 </p>
               </div>
-
-              {/* Unique Visual Snippet: Mini Wellbeing Scale */}
               <div className="bg-rose-50/70 p-2.5 rounded-2xl border border-rose-100/80 flex items-center justify-around text-xs">
                 <span className="opacity-40">😄</span>
                 <span className="opacity-40">🙂</span>
@@ -495,8 +454,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
               </button>
             </div>
           </div>
-
-          {/* Card 4: Doctor Visit Prep with checklist summary preview */}
           <div className="bg-white rounded-3xl p-6 border border-teal-100 shadow-xs hover:shadow-lg transition-all flex flex-col justify-between group">
             <div className="space-y-4">
               <div className="w-12 h-12 rounded-2xl bg-teal-50 text-teal-600 border border-teal-100 flex items-center justify-center">
@@ -511,8 +468,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                   Synthesize your personal observations and prioritize questions into a concise 1-page summary for your next visit.
                 </p>
               </div>
-
-              {/* Unique Visual Snippet: Mini Agenda Check */}
               <div className="bg-teal-50/70 p-3 rounded-2xl border border-teal-100/80 text-xs space-y-1">
                 <div className="flex items-center gap-1 text-[11px] font-bold text-teal-900">
                   <CheckCircle2 className="w-3.5 h-3.5 text-teal-600" />
@@ -534,8 +489,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
           </div>
         </div>
       </section>
-
-      {/* 4. HOW CAREBRIDGE WORKS — 4-STEP PROCESS WITH LINK TO FULL JOURNEY */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-12 space-y-3">
           <span className="inline-block px-3 py-1 rounded-full bg-purple-50 text-purple-700 text-xs font-bold tracking-wide uppercase">
@@ -563,8 +516,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
             </div>
           ))}
         </div>
-
-        {/* Link to Full 7-Step User Journey */}
         <div className="text-center pt-10">
           <button
             onClick={() => onNavigate('how-it-works')}
@@ -575,8 +526,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
           </button>
         </div>
       </section>
-
-      {/* 5. SECTION D: PRODUCT PREVIEW SHOWCASE */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-gradient-to-b from-slate-900 via-slate-900 to-indigo-950 text-white rounded-3xl p-6 sm:p-10 shadow-2xl space-y-8">
           <div className="text-center max-w-2xl mx-auto space-y-3">
@@ -589,8 +538,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
             <p className="text-slate-300 text-sm leading-relaxed">
               Explore the actual tools designed for cancer patients and caregivers to manage daily care and visit prep.
             </p>
-
-            {/* Interactive Preview Tabs */}
             <div className="pt-2 flex items-center justify-center gap-2 overflow-x-auto">
               <button
                 onClick={() => setActivePreviewTab('planner')}
@@ -634,8 +581,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
               </button>
             </div>
           </div>
-
-          {/* Interactive Preview Canvas */}
           <div className="bg-slate-900/90 rounded-2xl p-4 sm:p-6 border border-slate-800 shadow-inner">
             {activePreviewTab === 'planner' && (
               <div className="bg-[#F8FAFD] rounded-xl p-5 text-slate-900 space-y-4">
@@ -725,8 +670,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
           </div>
         </div>
       </section>
-
-      {/* 6. SUPPORT FOR PATIENTS AND CAREGIVERS (TWO-SIDED PERSPECTIVE) */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-12 space-y-3">
           <span className="inline-block px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-xs font-bold tracking-wide uppercase">
@@ -741,7 +684,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
-          {/* Patient Perspective */}
           <div className="bg-white rounded-3xl p-8 border border-indigo-100 shadow-xs hover:shadow-md transition-shadow flex flex-col justify-between space-y-6">
             <div className="space-y-4">
               <div className="flex items-center gap-3">
@@ -786,8 +728,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
               </button>
             </div>
           </div>
-
-          {/* Caregiver Perspective */}
           <div className="bg-white rounded-3xl p-8 border border-purple-100 shadow-xs hover:shadow-md transition-shadow flex flex-col justify-between space-y-6">
             <div className="space-y-4">
               <div className="flex items-center gap-3">
@@ -834,8 +774,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
           </div>
         </div>
       </section>
-
-      {/* 7. SECTION H & I: PRIVACY, RESPONSIBLE AI & ACCESSIBLE DESIGN */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-gradient-to-r from-indigo-50/90 via-purple-50/70 to-rose-50/60 rounded-3xl p-8 sm:p-12 border border-indigo-100 grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="space-y-3">
@@ -869,8 +807,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
           </div>
         </div>
       </section>
-
-      {/* 8. SECTION J: FREQUENTLY ASKED QUESTIONS */}
       <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-10 space-y-2">
           <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">
@@ -910,8 +846,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
           })}
         </div>
       </section>
-
-      {/* 9. SECTION K: FINAL CALL TO ACTION */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-gradient-to-r from-indigo-900 via-indigo-800 to-purple-900 rounded-3xl p-8 sm:p-12 text-white relative overflow-hidden shadow-2xl flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="max-w-xl space-y-3 text-center md:text-left">
@@ -926,16 +860,16 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
             </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-center gap-3 shrink-0">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto shrink-0">
             <button
               onClick={() => onNavigate(user ? 'dashboard' : 'signup')}
-              className="px-7 py-3.5 bg-white text-indigo-900 hover:bg-slate-100 rounded-2xl font-bold text-sm shadow-lg transition-colors whitespace-nowrap cursor-pointer"
+              className="w-full sm:w-auto px-7 py-3.5 bg-white text-indigo-900 hover:bg-slate-100 rounded-2xl font-bold text-sm shadow-lg transition-colors text-center cursor-pointer"
             >
               {user ? 'Go to Workspace' : 'Get Started'}
             </button>
             <button
               onClick={() => onNavigate('how-it-works')}
-              className="px-6 py-3.5 bg-white/10 hover:bg-white/20 text-white rounded-2xl font-semibold text-sm transition-colors whitespace-nowrap cursor-pointer"
+              className="w-full sm:w-auto px-6 py-3.5 bg-white/10 hover:bg-white/20 text-white rounded-2xl font-semibold text-sm transition-colors text-center cursor-pointer"
             >
               Explore How It Works
             </button>

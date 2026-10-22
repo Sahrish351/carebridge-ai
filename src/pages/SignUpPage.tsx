@@ -75,37 +75,33 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({ onNavigate }) => {
 
   return (
     <div className="min-h-screen bg-[#F8FAFD] flex flex-col justify-between py-6 px-4 sm:px-6 lg:px-8">
-      {/* 1. Standalone Top Navigation Header */}
-      <div className="w-full max-w-5xl mx-auto flex items-center justify-between pb-4">
+      <div className="w-full max-w-5xl mx-auto flex items-center justify-between pb-4 gap-2">
         <button
           onClick={() => onNavigate('home')}
-          className="flex items-center gap-2.5 text-left group focus:outline-none cursor-pointer"
+          className="flex items-center gap-2 sm:gap-2.5 text-left group focus:outline-none cursor-pointer shrink-0"
         >
-          <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-rose-400 flex items-center justify-center text-white shadow-xs group-hover:scale-105 transition-transform duration-200">
-            <Heart className="w-5 h-5 fill-white/90" />
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-rose-400 flex items-center justify-center text-white shadow-xs group-hover:scale-105 transition-transform duration-200 shrink-0">
+            <Heart className="w-4.5 h-4.5 sm:w-5 sm:h-5 fill-white/90" />
           </div>
           <div className="flex flex-col">
-            <span className="text-xl font-bold tracking-tight text-slate-900 leading-none">
+            <span className="text-lg sm:text-xl font-bold tracking-tight text-slate-900 leading-none">
               CareBridge <span className="text-indigo-600">AI</span>
             </span>
-            <span className="text-[11px] text-slate-400 font-medium mt-0.5">Cancer Care Companion</span>
+            <span className="text-[10px] sm:text-[11px] text-slate-400 font-medium mt-0.5">Cancer Care Companion</span>
           </div>
         </button>
 
         <button
           onClick={() => onNavigate('home')}
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-indigo-600 transition-colors cursor-pointer py-1.5 px-3 rounded-xl hover:bg-slate-100"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-indigo-600 transition-colors cursor-pointer py-1.5 px-2.5 sm:px-3 rounded-xl hover:bg-slate-100 shrink-0"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
-          <span>Back to Home</span>
+          <span>Back</span>
         </button>
       </div>
-
-      {/* 2. Standalone Split Card */}
       <div className="w-full max-w-5xl mx-auto my-auto">
         <div className="w-full bg-white rounded-3xl shadow-xl shadow-indigo-100/70 border border-slate-200/90 overflow-hidden grid grid-cols-1 lg:grid-cols-12">
-          {/* Left Side: Storytelling Panel (5 cols) */}
-          <div className="lg:col-span-5 bg-gradient-to-br from-indigo-950 via-indigo-900 to-purple-950 p-8 text-white flex flex-col justify-between relative overflow-hidden">
+          <div className="hidden lg:flex lg:col-span-5 bg-gradient-to-br from-indigo-950 via-indigo-900 to-purple-950 p-8 text-white flex-col justify-between relative overflow-hidden">
             <div className="space-y-4 relative z-10">
               <div className="space-y-2">
                 <span className="inline-block text-xs font-semibold text-rose-300 font-script text-xl">
@@ -118,8 +114,6 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({ onNavigate }) => {
                   Start organizing your care appointments, tracking daily symptoms, and getting source-grounded answers.
                 </p>
               </div>
-
-              {/* Supportive Hands Visual Accent */}
               <div className="rounded-2xl overflow-hidden aspect-16/10 border border-white/10 shadow-md relative mt-4">
                 <img
                   src="/assets/ribbon_hands_clean.png"
@@ -143,16 +137,12 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({ onNavigate }) => {
                 </div>
               </div>
             </div>
-
-            {/* Privacy reassurance */}
             <div className="pt-6 border-t border-indigo-800/80 relative z-10 text-[11px] text-indigo-200 flex items-center gap-2">
               <Shield className="w-4 h-4 text-emerald-400 shrink-0" />
               <span>We never sell health data or monetize your personal observations.</span>
             </div>
           </div>
-
-          {/* Right Side: Registration Form (7 cols) */}
-          <div className="lg:col-span-7 p-8 sm:p-10 space-y-6 flex flex-col justify-between">
+          <div className="lg:col-span-7 p-5 sm:p-8 lg:p-10 space-y-5 sm:space-y-6 flex flex-col justify-between">
             <div className="space-y-5">
               <div className="space-y-1">
                 <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">
@@ -162,8 +152,6 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({ onNavigate }) => {
                   Select your primary role to customize your CareBridge AI experience.
                 </p>
               </div>
-
-              {/* Role Selector Tabs */}
               <div className="bg-slate-100 p-1 rounded-2xl grid grid-cols-3 gap-1">
                 <button
                   type="button"
@@ -206,8 +194,6 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({ onNavigate }) => {
                   <span>{errorMessage}</span>
                 </div>
               )}
-
-              {/* Form */}
               <form onSubmit={handleSubmit} className="space-y-3.5">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1">
@@ -285,8 +271,6 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({ onNavigate }) => {
                     </div>
                   </div>
                 </div>
-
-                {/* Consent Checkbox */}
                 <div className="pt-1">
                   <label className="flex items-start gap-2.5 cursor-pointer text-xs text-slate-600">
                     <input
@@ -300,8 +284,6 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({ onNavigate }) => {
                     </span>
                   </label>
                 </div>
-
-                {/* Submit */}
                 <button
                   type="submit"
                   disabled={loading}
@@ -318,8 +300,6 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({ onNavigate }) => {
                 </button>
               </form>
             </div>
-
-            {/* Switch to Sign In */}
             <div className="text-center text-xs text-slate-500 pt-4 border-t border-slate-100">
               <span>Already have an account? </span>
               <button
@@ -332,8 +312,6 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({ onNavigate }) => {
           </div>
         </div>
       </div>
-
-      {/* 3. Small Clean Copyright & Privacy Note Only */}
       <div className="w-full max-w-5xl mx-auto pt-6 text-center text-xs text-slate-400">
         <p>© 2026 CareBridge AI · CodeTheCure Hackathon · Patient Dignity & Privacy First</p>
       </div>

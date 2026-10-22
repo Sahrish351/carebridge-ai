@@ -4,7 +4,6 @@ import { askAiAssistant, generateDoctorVisitSummary } from './aiService.js';
 
 export const apiRouter = Router();
 
-// Middleware: Authenticate Session
 export interface AuthRequest extends Request {
   user?: User;
 }
@@ -53,14 +52,9 @@ export async function optionalAuthMiddleware(req: AuthRequest, _res: Response, n
 }
 
 function sanitizeUser(user: User): Omit<User, 'passwordHash'> {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { passwordHash, ...safe } = user;
   return safe;
 }
-
-// ==========================================
-// AUTH ROUTES
-// ==========================================
 
 apiRouter.post('/auth/register', async (req: Request, res: Response): Promise<void> => {
   try {
@@ -142,7 +136,6 @@ apiRouter.post('/auth/demo-login', async (req: Request, res: Response): Promise<
 
     let user = await db.getUserByEmail(targetEmail);
     if (!user) {
-      // In Supabase without seed executed, create the demo account automatically
       const demoNames: Record<string, string> = {
         'areeba@example.com': 'Areeba Khan',
         'tariq@example.com': 'Tariq Khan',
@@ -242,10 +235,6 @@ apiRouter.post('/auth/reset-password', async (req: Request, res: Response): Prom
   res.json({ success: true, message: 'Password updated successfully. You can now log in.' });
 });
 
-// ==========================================
-// APPOINTMENTS ROUTES
-// ==========================================
-
 apiRouter.get('/appointments', authMiddleware, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const appointments = await db.getAppointments(req.user!.id);
@@ -299,10 +288,6 @@ apiRouter.delete('/appointments/:id', authMiddleware, async (req: AuthRequest, r
   }
 });
 
-// ==========================================
-// SYMPTOM JOURNAL ROUTES
-// ==========================================
-
 apiRouter.get('/journal', authMiddleware, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const entries = await db.getJournalEntries(req.user!.id);
@@ -352,10 +337,6 @@ apiRouter.delete('/journal/:id', authMiddleware, async (req: AuthRequest, res: R
   }
 });
 
-// ==========================================
-// DAILY TASKS ROUTES
-// ==========================================
-
 apiRouter.get('/tasks', authMiddleware, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const dateStr = typeof req.query.date === 'string' ? req.query.date : undefined;
@@ -392,10 +373,6 @@ apiRouter.post('/tasks', authMiddleware, async (req: AuthRequest, res: Response)
     res.status(500).json({ error: err.message });
   }
 });
-
-// ==========================================
-// CAREGIVER ACCESS ROUTES
-// ==========================================
 
 apiRouter.get('/caregivers', authMiddleware, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
@@ -449,10 +426,6 @@ apiRouter.get('/caregivers/shared-patients', authMiddleware, async (req: AuthReq
   }
 });
 
-// ==========================================
-// AI ASSISTANT ROUTES
-// ==========================================
-
 apiRouter.get('/ai/sessions', authMiddleware, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const sessions = await db.getChatSessions(req.user!.id);
@@ -478,13 +451,11 @@ apiRouter.post('/ai/ask', optionalAuthMiddleware, async (req: AuthRequest, res: 
         session = await db.createChatSession(req.user.id, shortTitle);
       }
 
-      // Save user message
       await db.addChatMessage(req.user.id, session.id, {
         role: 'user',
         content: prompt,
       });
 
-      // Call AI
       const response = await askAiAssistant({
         prompt,
         history: session.messages.map((m) => ({ role: m.role, content: m.content })),
@@ -492,7 +463,6 @@ apiRouter.post('/ai/ask', optionalAuthMiddleware, async (req: AuthRequest, res: 
         regimen: req.user.treatmentPlan?.regimen,
       });
 
-      // Save assistant message
       const botMsg = await db.addChatMessage(req.user.id, session.id, {
         role: 'assistant',
         content: response.content,
@@ -505,7 +475,6 @@ apiRouter.post('/ai/ask', optionalAuthMiddleware, async (req: AuthRequest, res: 
         message: botMsg,
       });
     } else {
-      // Guest exploration mode - ground and answer directly
       const response = await askAiAssistant({
         prompt,
         userName: 'Visitor',
@@ -536,10 +505,6 @@ apiRouter.delete('/ai/sessions/:id', authMiddleware, async (req: AuthRequest, re
     res.status(400).json({ error: err.message });
   }
 });
-
-// ==========================================
-// DOCTOR VISIT SUMMARY ROUTES
-// ==========================================
 
 apiRouter.get('/summaries', authMiddleware, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
@@ -639,10 +604,6 @@ apiRouter.delete('/summaries/:id', authMiddleware, async (req: AuthRequest, res:
     res.status(400).json({ error: err.message });
   }
 });
-
-// ==========================================
-// USER PROFILE & SETTINGS ROUTES
-// ==========================================
 
 apiRouter.put('/user/profile', authMiddleware, async (req: AuthRequest, res: Response): Promise<void> => {
   try {

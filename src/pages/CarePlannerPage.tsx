@@ -33,7 +33,6 @@ export const CarePlannerPage: React.FC<CarePlannerPageProps> = ({ onNavigate }) 
   const [modalOpen, setModalOpen] = useState(false);
   const [editingApt, setEditingApt] = useState<Appointment | null>(null);
 
-  // Form State
   const [title, setTitle] = useState('');
   const [doctor, setDoctor] = useState('');
   const [specialty, setSpecialty] = useState('');
@@ -151,12 +150,10 @@ export const CarePlannerPage: React.FC<CarePlannerPageProps> = ({ onNavigate }) 
     oncologist: 'Dr. Saman Ali',
   };
 
-  // Calendar dates for October 2026 (starts on Thursday, 31 days)
   const daysInOctober = Array.from({ length: 31 }, (_, i) => i + 1);
 
   return (
     <div className="space-y-8 pb-12">
-      {/* Top Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
@@ -166,8 +163,6 @@ export const CarePlannerPage: React.FC<CarePlannerPageProps> = ({ onNavigate }) 
             Manage your appointments, treatments and daily tasks.
           </p>
         </div>
-
-        {/* Tab Switcher matching visual reference */}
         <div className="bg-slate-100 p-1 rounded-xl flex items-center gap-1">
           <button
             onClick={() => setActiveTab('appointments')}
@@ -201,10 +196,7 @@ export const CarePlannerPage: React.FC<CarePlannerPageProps> = ({ onNavigate }) 
           </button>
         </div>
       </div>
-
-      {/* Main Grid: Calendar & Treatment Details */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* Left Column: Interactive Calendar (4 cols on lg) */}
         <div className="lg:col-span-5 bg-white rounded-3xl p-6 border border-slate-200 shadow-xs space-y-4">
           <div className="flex items-center justify-between pb-2 border-b border-slate-100">
             <span className="text-base font-bold text-slate-900">October 2026</span>
@@ -217,8 +209,6 @@ export const CarePlannerPage: React.FC<CarePlannerPageProps> = ({ onNavigate }) 
               </button>
             </div>
           </div>
-
-          {/* Calendar Day Header */}
           <div className="grid grid-cols-7 text-center text-xs font-semibold text-slate-400">
             <span>Su</span>
             <span>Mo</span>
@@ -228,10 +218,7 @@ export const CarePlannerPage: React.FC<CarePlannerPageProps> = ({ onNavigate }) 
             <span>Fr</span>
             <span>Sa</span>
           </div>
-
-          {/* Calendar Grid */}
           <div className="grid grid-cols-7 gap-1 text-center text-xs">
-            {/* October 2026 starts on Thursday (offset 4 empty cells) */}
             <span className="p-2 text-slate-300"></span>
             <span className="p-2 text-slate-300"></span>
             <span className="p-2 text-slate-300"></span>
@@ -274,10 +261,7 @@ export const CarePlannerPage: React.FC<CarePlannerPageProps> = ({ onNavigate }) 
             </button>
           </div>
         </div>
-
-        {/* Right Column: Appointments & Treatment Plan Overview (7 cols on lg) */}
         <div className="lg:col-span-7 space-y-6">
-          {/* Treatment Plan Section Card matching visual reference */}
           <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-xs space-y-5">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-bold text-slate-900">Treatment Plan</h2>
@@ -285,8 +269,6 @@ export const CarePlannerPage: React.FC<CarePlannerPageProps> = ({ onNavigate }) 
                 Cycle {treatmentPlan.currentCycle} of {treatmentPlan.totalCycles}
               </span>
             </div>
-
-            {/* Progress Bar */}
             <div className="space-y-1.5">
               <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
                 <div className="bg-gradient-to-r from-indigo-500 to-rose-400 h-2.5 rounded-full w-[33%]"></div>
@@ -297,8 +279,6 @@ export const CarePlannerPage: React.FC<CarePlannerPageProps> = ({ onNavigate }) 
                 <span>Cycle 6 Completion</span>
               </div>
             </div>
-
-            {/* Milestone node circles matching visual reference */}
             <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 text-center text-xs pt-1">
               <div className="p-2.5 bg-emerald-50 rounded-xl border border-emerald-100">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600 mx-auto mb-1" />
@@ -336,8 +316,6 @@ export const CarePlannerPage: React.FC<CarePlannerPageProps> = ({ onNavigate }) 
                 <p className="text-[10px] text-slate-400">Upcoming</p>
               </div>
             </div>
-
-            {/* Split cards: Treatment Details & Quick Actions */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
               <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 space-y-2">
                 <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500">
@@ -390,8 +368,6 @@ export const CarePlannerPage: React.FC<CarePlannerPageProps> = ({ onNavigate }) 
               </div>
             </div>
           </div>
-
-          {/* Upcoming Appointments List */}
           <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-xs space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-bold text-slate-900">Upcoming Appointments</h3>
@@ -467,19 +443,17 @@ export const CarePlannerPage: React.FC<CarePlannerPageProps> = ({ onNavigate }) 
           </div>
         </div>
       </div>
-
-      {/* ADD / EDIT APPOINTMENT MODAL */}
       {modalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative">
+        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
+          <div className="bg-white rounded-3xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-5 sm:p-8 shadow-2xl relative">
             <button
               onClick={() => setModalOpen(false)}
-              className="absolute top-5 right-5 p-2 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100"
+              className="absolute top-4 right-4 sm:top-5 sm:right-5 p-2 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
 
-            <h3 className="text-xl font-bold text-slate-900 mb-4">
+            <h3 className="text-lg sm:text-xl font-bold text-slate-900 mb-4 pr-8">
               {editingApt ? 'Edit Appointment' : 'Schedule New Appointment'}
             </h3>
 
@@ -503,7 +477,7 @@ export const CarePlannerPage: React.FC<CarePlannerPageProps> = ({ onNavigate }) 
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block font-bold text-slate-700 mb-1">Doctor / Provider</label>
                   <input
@@ -526,7 +500,7 @@ export const CarePlannerPage: React.FC<CarePlannerPageProps> = ({ onNavigate }) 
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block font-bold text-slate-700 mb-1">Date</label>
                   <input

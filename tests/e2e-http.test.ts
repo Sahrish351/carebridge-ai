@@ -19,13 +19,11 @@ async function runE2E() {
   console.log(' CareBridge AI - End-to-End Live HTTP Protocol Tests');
   console.log('======================================================\n');
 
-  // Start HTTP server on port 3099 for testing
   const server = http.createServer(app);
   await new Promise<void>((resolve) => server.listen(3099, '127.0.0.1', () => resolve()));
   const baseUrl = 'http://127.0.0.1:3099';
 
   try {
-    // 1. Health check
     console.log('--- 1. Production API Health Check ---');
     const healthRes = await fetch(`${baseUrl}/healthz`);
     const healthJson = await healthRes.json();
@@ -33,7 +31,6 @@ async function runE2E() {
     assert(healthJson.status === 'ok', 'Health status is ok');
     assert(typeof healthJson.storage === 'string', `Storage reported as: ${healthJson.storage}`);
 
-    // 2. Registration with new test account
     console.log('\n--- 2. Production Registration Flow ---');
     const testEmail = `live_patient_${Date.now()}@example.com`;
     const regRes = await fetch(`${baseUrl}/api/auth/register`, {
@@ -56,7 +53,6 @@ async function runE2E() {
     const cookieHeader = regRes.headers.get('set-cookie');
     assert(!!cookieHeader, 'Set-Cookie header returned with session cookie');
 
-    // 3. Duplicate registration check
     console.log('\n--- 3. Duplicate Registration Validation ---');
     const dupRes = await fetch(`${baseUrl}/api/auth/register`, {
       method: 'POST',
@@ -72,7 +68,6 @@ async function runE2E() {
     assert(dupRes.status === 400, 'Duplicate registration returns HTTP 400');
     assert(dupJson.error?.includes('already exists'), 'Clear duplicate email error returned');
 
-    // 4. Authenticated Dashboard Access (/auth/me) & Page Refresh Simulation
     console.log('\n--- 4. Session Validation & Dashboard Refresh ---');
     const meRes = await fetch(`${baseUrl}/api/auth/me`, {
       headers: { Authorization: `Bearer ${authToken}` },
@@ -82,7 +77,6 @@ async function runE2E() {
     assert(meJson.user?.name === 'Fatima Zahra', 'User identity preserved across session check');
     assert(meJson.user?.role === 'patient', 'User role correctly verified as patient');
 
-    // 5. Appointment creation and persistence for new user
     console.log('\n--- 5. User Data Persistence (Appointments & Tasks) ---');
     const aptRes = await fetch(`${baseUrl}/api/appointments`, {
       method: 'POST',
@@ -111,7 +105,6 @@ async function runE2E() {
     const getAptJson = await getAptRes.json();
     assert(Array.isArray(getAptJson) && getAptJson.length >= 1, 'GET /appointments retrieves persisted appointment');
 
-    // 6. Logout
     console.log('\n--- 6. Session Logout & Token Invalidation ---');
     const logoutRes = await fetch(`${baseUrl}/api/auth/logout`, {
       method: 'POST',
@@ -119,13 +112,11 @@ async function runE2E() {
     });
     assert(logoutRes.status === 200, 'POST /auth/logout returns HTTP 200');
 
-    // Access after logout must fail
     const meAfterLogout = await fetch(`${baseUrl}/api/auth/me`, {
       headers: { Authorization: `Bearer ${authToken}` },
     });
     assert(meAfterLogout.status === 401, 'GET /auth/me returns HTTP 401 Unauthorized after logout');
 
-    // 7. Second Login to verify persistent credentials
     console.log('\n--- 7. Second Login Verification (Account Persistence) ---');
     const loginRes = await fetch(`${baseUrl}/api/auth/login`, {
       method: 'POST',
@@ -140,7 +131,6 @@ async function runE2E() {
     assert(loginJson.user?.email === testEmail, 'Login verified correct user');
     assert(!!loginJson.token, 'New valid session token issued on second login');
 
-    // 8. Invalid credentials test
     console.log('\n--- 8. Security: Invalid Password Rejection ---');
     const badLoginRes = await fetch(`${baseUrl}/api/auth/login`, {
       method: 'POST',
@@ -154,7 +144,6 @@ async function runE2E() {
     assert(badLoginRes.status === 401, 'Invalid password rejected with HTTP 401');
     assert(badLoginJson.error?.includes('Invalid email or password'), 'Appropriate security error message');
 
-    // 9. Demo accounts test
     console.log('\n--- 9. Pre-Configured Demo Accounts Verification ---');
     const demoPatientRes = await fetch(`${baseUrl}/api/auth/demo-login`, {
       method: 'POST',

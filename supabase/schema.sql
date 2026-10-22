@@ -1,16 +1,6 @@
--- ==============================================================================
--- CareBridge AI — Supabase PostgreSQL Database Schema & Migration
--- ==============================================================================
--- Instructions:
--- 1. In your Supabase Dashboard, navigate to the SQL Editor.
--- 2. Click "New Query", paste the entire contents of this file, and click "Run".
--- 3. Verify in Table Editor that the 9 tables are created.
--- ==============================================================================
 
--- Enable pgcrypto extension for cryptographic helpers
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
--- 1. USERS TABLE
 CREATE TABLE IF NOT EXISTS public.users (
   id TEXT PRIMARY KEY,
   email TEXT UNIQUE NOT NULL,
@@ -23,7 +13,6 @@ CREATE TABLE IF NOT EXISTS public.users (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- 2. SESSIONS TABLE
 CREATE TABLE IF NOT EXISTS public.sessions (
   token TEXT PRIMARY KEY,
   user_id TEXT NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
@@ -31,7 +20,6 @@ CREATE TABLE IF NOT EXISTS public.sessions (
   expires_at BIGINT NOT NULL
 );
 
--- 3. APPOINTMENTS TABLE
 CREATE TABLE IF NOT EXISTS public.appointments (
   id TEXT PRIMARY KEY,
   user_id TEXT NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
@@ -47,7 +35,6 @@ CREATE TABLE IF NOT EXISTS public.appointments (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- 4. JOURNAL ENTRIES TABLE
 CREATE TABLE IF NOT EXISTS public.journal_entries (
   id TEXT PRIMARY KEY,
   user_id TEXT NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
@@ -59,7 +46,6 @@ CREATE TABLE IF NOT EXISTS public.journal_entries (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- 5. DAILY TASKS TABLE
 CREATE TABLE IF NOT EXISTS public.daily_tasks (
   id TEXT PRIMARY KEY,
   user_id TEXT NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
@@ -69,7 +55,6 @@ CREATE TABLE IF NOT EXISTS public.daily_tasks (
   completed BOOLEAN NOT NULL DEFAULT false
 );
 
--- 6. CAREGIVER PERMISSIONS TABLE
 CREATE TABLE IF NOT EXISTS public.caregiver_permissions (
   id TEXT PRIMARY KEY,
   patient_user_id TEXT NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
@@ -80,7 +65,6 @@ CREATE TABLE IF NOT EXISTS public.caregiver_permissions (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- 7. CHAT SESSIONS TABLE
 CREATE TABLE IF NOT EXISTS public.chat_sessions (
   id TEXT PRIMARY KEY,
   user_id TEXT NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
@@ -90,7 +74,6 @@ CREATE TABLE IF NOT EXISTS public.chat_sessions (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- 8. VISIT SUMMARIES TABLE
 CREATE TABLE IF NOT EXISTS public.visit_summaries (
   id TEXT PRIMARY KEY,
   user_id TEXT NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
@@ -106,16 +89,12 @@ CREATE TABLE IF NOT EXISTS public.visit_summaries (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- 9. PASSWORD RESET TOKENS TABLE
 CREATE TABLE IF NOT EXISTS public.password_reset_tokens (
   token TEXT PRIMARY KEY,
   email TEXT NOT NULL,
   expires_at BIGINT NOT NULL
 );
 
--- ==============================================================================
--- PERFORMANCE INDEXES
--- ==============================================================================
 CREATE INDEX IF NOT EXISTS idx_users_email ON public.users(email);
 CREATE INDEX IF NOT EXISTS idx_sessions_user_id ON public.sessions(user_id);
 CREATE INDEX IF NOT EXISTS idx_sessions_token ON public.sessions(token);
@@ -127,9 +106,6 @@ CREATE INDEX IF NOT EXISTS idx_caregiver_email ON public.caregiver_permissions(c
 CREATE INDEX IF NOT EXISTS idx_chat_user_id ON public.chat_sessions(user_id);
 CREATE INDEX IF NOT EXISTS idx_summaries_user_id ON public.visit_summaries(user_id);
 
--- ==============================================================================
--- ROW LEVEL SECURITY (RLS) POLICIES
--- ==============================================================================
 ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.sessions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.appointments ENABLE ROW LEVEL SECURITY;
@@ -140,7 +116,6 @@ ALTER TABLE public.chat_sessions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.visit_summaries ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.password_reset_tokens ENABLE ROW LEVEL SECURITY;
 
--- Allow service role (backend API) full access to all tables
 DO $$
 BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Service role full access on users') THEN
@@ -171,13 +146,6 @@ BEGIN
     CREATE POLICY "Service role full access on password_reset_tokens" ON public.password_reset_tokens FOR ALL USING (true);
   END IF;
 END $$;
-
--- ==============================================================================
--- PRE-SEEDED DEMO ACCOUNTS & INITIAL DATA
--- ==============================================================================
--- Password for all demo accounts is: password123
--- PBKDF2 salt: carebridge_cure_salt_2026, iterations: 1000, 64-byte sha512
--- Hash: 9d284db63a937f9568c31c302b211cea11c7e06d06c6b888afb5a08bdec6d3579230dc5f0a2c4e1515b7d46ac886d3364986efc784c17d3ad8b42b771830d789
 
 INSERT INTO public.users (id, email, password_hash, name, role, language, accessibility, treatment_plan, created_at)
 VALUES
@@ -219,7 +187,6 @@ ON CONFLICT (email) DO UPDATE SET
   name = EXCLUDED.name,
   role = EXCLUDED.role;
 
--- Seed Appointments for Areeba Khan
 INSERT INTO public.appointments (id, user_id, title, doctor, specialty, date, time, location, type, notes, reminder, created_at)
 VALUES
 (
@@ -266,7 +233,6 @@ VALUES
 )
 ON CONFLICT (id) DO NOTHING;
 
--- Seed Journal Entries for Areeba Khan
 INSERT INTO public.journal_entries (id, user_id, date, symptoms, severity, mood, notes, created_at)
 VALUES
 (
@@ -311,7 +277,6 @@ VALUES
 )
 ON CONFLICT (id) DO NOTHING;
 
--- Seed Daily Tasks for Areeba Khan
 INSERT INTO public.daily_tasks (id, user_id, date, title, category, completed)
 VALUES
 (
@@ -348,7 +313,6 @@ VALUES
 )
 ON CONFLICT (id) DO NOTHING;
 
--- Seed Caregiver Permission for Tariq Khan
 INSERT INTO public.caregiver_permissions (id, patient_user_id, caregiver_email, caregiver_name, status, permissions, created_at)
 VALUES
 (
@@ -362,7 +326,6 @@ VALUES
 )
 ON CONFLICT (id) DO NOTHING;
 
--- Seed Visit Summary for Areeba Khan
 INSERT INTO public.visit_summaries (id, user_id, appointment_id, appointment_title, doctor_name, appointment_date, chief_concerns, symptoms_summary, current_medications, questions_for_doctor, patient_notes, created_at)
 VALUES
 (

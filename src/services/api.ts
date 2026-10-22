@@ -31,7 +31,7 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
     const response = await fetch(`/api${endpoint}`, {
       ...options,
       headers,
-      credentials: 'include', // sends cb_session cookie
+      credentials: 'include',
     });
 
     const contentType = response.headers.get('content-type');
@@ -59,7 +59,6 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
 }
 
 export const api = {
-  // Auth
   async register(body: { email: string; password: string; name: string; role: string }) {
     const res = await request<{ user: User; token: string }>('/auth/register', {
       method: 'POST',
@@ -116,7 +115,6 @@ export const api = {
     });
   },
 
-  // Appointments
   async getAppointments() {
     return request<Appointment[]>('/appointments');
   },
@@ -141,7 +139,6 @@ export const api = {
     });
   },
 
-  // Symptom Journal
   async getJournalEntries() {
     return request<JournalEntry[]>('/journal');
   },
@@ -166,7 +163,6 @@ export const api = {
     });
   },
 
-  // Daily Tasks
   async getDailyTasks(date?: string) {
     const query = date ? `?date=${encodeURIComponent(date)}` : '';
     return request<DailyTask[]>(`/tasks${query}`);
@@ -185,7 +181,6 @@ export const api = {
     });
   },
 
-  // Caregiver Access
   async getCaregiverPermissions() {
     return request<CaregiverPermission[]>('/caregivers');
   },
@@ -211,7 +206,6 @@ export const api = {
     return request<Array<{ patient: User; permission: CaregiverPermission }>>('/caregivers/shared-patients');
   },
 
-  // AI Assistant
   async getAiSessions() {
     return request<ChatSession[]>('/ai/sessions');
   },
@@ -229,7 +223,6 @@ export const api = {
     });
   },
 
-  // Doctor Visit Summaries
   async getVisitSummaries() {
     return request<VisitSummary[]>('/summaries');
   },
@@ -260,7 +253,6 @@ export const api = {
     });
   },
 
-  // Profile & Settings
   async updateProfile(updates: Partial<User>) {
     return request<User>('/user/profile', {
       method: 'PUT',

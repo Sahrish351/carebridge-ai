@@ -42,8 +42,8 @@ export interface Appointment {
   title: string;
   doctor: string;
   specialty: string;
-  date: string; // YYYY-MM-DD
-  time: string; // e.g. "10:00 AM"
+  date: string;
+  time: string;
   location: string;
   type: 'oncology' | 'blood_test' | 'infusion' | 'consultation' | 'imaging';
   notes: string;
@@ -54,9 +54,9 @@ export interface Appointment {
 export interface JournalEntry {
   id: string;
   userId: string;
-  date: string; // YYYY-MM-DD
+  date: string;
   symptoms: string[];
-  severity: number; // 1-10
+  severity: number;
   mood: 'great' | 'good' | 'okay' | 'bad' | 'very_bad';
   notes: string;
   createdAt: string;
@@ -149,7 +149,6 @@ export function hashPassword(password: string): string {
   return crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512').toString('hex');
 }
 
-// Initial seed data reflecting the exact patient profile and records from the visual reference
 function getInitialSeedData(): DatabaseSchema {
   const defaultPw = hashPassword('password123');
 
@@ -505,7 +504,6 @@ class Database {
 
   private loadData(): DatabaseSchema {
     try {
-      // 1. Check /tmp if running in read-only environment like Vercel
       const tmpFile = path.resolve(os.tmpdir(), 'carebridge-data', 'carebridge.json');
       if (fs.existsSync(tmpFile)) {
         const content = fs.readFileSync(tmpFile, 'utf-8');
@@ -513,7 +511,6 @@ class Database {
         return this.sanitizeLoadedData(parsed);
       }
 
-      // 2. Check local data directory
       if (fs.existsSync(DB_FILE)) {
         const content = fs.readFileSync(DB_FILE, 'utf-8');
         const parsed = JSON.parse(content);
@@ -549,7 +546,6 @@ class Database {
       }
       fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2), 'utf-8');
     } catch (err) {
-      // If process.cwd() is read-only (e.g. Vercel serverless), write to /tmp
       try {
         const tmpDir = path.resolve(os.tmpdir(), 'carebridge-data');
         if (!fs.existsSync(tmpDir)) {
@@ -557,7 +553,6 @@ class Database {
         }
         fs.writeFileSync(path.join(tmpDir, 'carebridge.json'), JSON.stringify(data, null, 2), 'utf-8');
       } catch (tmpErr) {
-        // Retained in-memory in this.data
       }
     }
   }
@@ -566,9 +561,6 @@ class Database {
     this.saveDataDirect(this.data);
   }
 
-  // ============================================================================
-  // USERS & AUTH
-  // ============================================================================
   public async getUserByEmail(email: string): Promise<User | undefined> {
     const normalized = email.trim().toLowerCase();
 
@@ -705,7 +697,6 @@ class Database {
 
         if (error) throw error;
 
-        // If patient, seed starter tasks in Supabase
         if (newUser.role === 'patient') {
           const today = new Date().toISOString().split('T')[0];
           await this.supabase.from('daily_tasks').insert([
@@ -732,7 +723,6 @@ class Database {
       }
     }
 
-    // Always maintain in local store as well
     this.data.users.push(newUser);
     if (newUser.role === 'patient') {
       const today = new Date().toISOString().split('T')[0];
@@ -796,16 +786,13 @@ class Database {
     return { ...user, ...updates };
   }
 
-  // ============================================================================
-  // SESSIONS
-  // ============================================================================
   public async createSession(userId: string): Promise<Session> {
     const token = crypto.randomBytes(32).toString('hex');
     const session: Session = {
       token,
       userId,
       createdAt: Date.now(),
-      expiresAt: Date.now() + 30 * 24 * 60 * 60 * 1000, // 30 days
+      expiresAt: Date.now() + 30 * 24 * 60 * 60 * 1000,
     };
 
     if (this.supabase) {
@@ -875,9 +862,6 @@ class Database {
     this.save();
   }
 
-  // ============================================================================
-  // APPOINTMENTS
-  // ============================================================================
   public async getAppointments(userId: string): Promise<Appointment[]> {
     if (this.supabase) {
       try {
@@ -1006,9 +990,6 @@ class Database {
     }
   }
 
-  // ============================================================================
-  // SYMPTOM JOURNAL
-  // ============================================================================
   public async getJournalEntries(userId: string): Promise<JournalEntry[]> {
     if (this.supabase) {
       try {
@@ -1125,9 +1106,6 @@ class Database {
     }
   }
 
-  // ============================================================================
-  // DAILY TASKS
-  // ============================================================================
   public async getDailyTasks(userId: string, dateStr?: string): Promise<DailyTask[]> {
     const date = dateStr || new Date().toISOString().split('T')[0];
 
@@ -1150,7 +1128,6 @@ class Database {
             completed: t.completed,
           }));
         } else {
-          // Seed starter daily tasks for this date
           const defaults: Array<Omit<DailyTask, 'id' | 'userId' | 'date'>> = [
             { title: 'Take prescribed medication', category: 'medication', completed: false },
             { title: 'Drink water (Hydration goal: 2 liters)', category: 'hydration', completed: false },
@@ -1282,9 +1259,6 @@ class Database {
     return task;
   }
 
-  // ============================================================================
-  // CAREGIVER PERMISSIONS
-  // ============================================================================
   public async getCaregiverPermissions(patientUserId: string): Promise<CaregiverPermission[]> {
     if (this.supabase) {
       try {
@@ -1478,9 +1452,6 @@ class Database {
     this.save();
   }
 
-  // ============================================================================
-  // CHAT SESSIONS
-  // ============================================================================
   public async getChatSessions(userId: string): Promise<ChatSession[]> {
     if (this.supabase) {
       try {
@@ -1627,9 +1598,6 @@ class Database {
     }
   }
 
-  // ============================================================================
-  // VISIT SUMMARIES
-  // ============================================================================
   public async getVisitSummaries(userId: string): Promise<VisitSummary[]> {
     if (this.supabase) {
       try {
@@ -1719,13 +1687,10 @@ class Database {
     }
   }
 
-  // ============================================================================
-  // PASSWORD RESET
-  // ============================================================================
   public async createPasswordResetToken(email: string): Promise<string> {
     const token = crypto.randomBytes(24).toString('hex');
     const normalizedEmail = email.toLowerCase();
-    const expiresAt = Date.now() + 60 * 60 * 1000; // 1 hour
+    const expiresAt = Date.now() + 60 * 60 * 1000;
 
     if (this.supabase) {
       try {
@@ -1788,13 +1753,9 @@ class Database {
     return true;
   }
 
-  // ============================================================================
-  // DATA PURGE / DELETE ACCOUNT
-  // ============================================================================
   public async deleteUserData(userId: string): Promise<void> {
     if (this.supabase) {
       try {
-        // Cascade delete will delete related rows in appointments, sessions, journal, etc.
         await this.supabase.from('users').delete().eq('id', userId);
       } catch (err) {
         console.warn('[Supabase] deleteUserData failed:', err);

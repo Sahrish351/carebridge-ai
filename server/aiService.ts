@@ -13,7 +13,6 @@ interface AiResponse {
   disclaimer: string;
 }
 
-// Curated verified sources bank
 const TRUSTED_SOURCES: Record<string, Source> = {
   nci_chemo: {
     title: 'Chemotherapy and You: Support for People With Cancer',
@@ -65,7 +64,6 @@ const TRUSTED_SOURCES: Record<string, Source> = {
 const MEDICAL_DISCLAIMER =
   'CareBridge AI provides educational health information and organizational support. It does not provide medical diagnoses, treatment prescriptions, or emergency triage. Always discuss all treatment decisions and symptoms directly with your oncology team.';
 
-// Fallback knowledge base for offline/no-key evaluation
 function getCuratedResponse(prompt: string): AiResponse {
   const lower = prompt.toLowerCase();
 
@@ -151,7 +149,6 @@ During active cancer therapy (especially chemotherapy and immunotherapy), certai
     };
   }
 
-  // General cancer journey response
   return {
     content: `Navigating a cancer diagnosis involves coordinating many medical, emotional, and logistical details. Here is practical guidance on this topic:
 
@@ -180,7 +177,6 @@ export async function askAiAssistant(params: {
   const apiKey = process.env.GEMINI_API_KEY;
 
   if (!apiKey || apiKey === 'MY_GEMINI_API_KEY') {
-    // Return curated grounded response
     return getCuratedResponse(params.prompt);
   }
 
@@ -221,7 +217,6 @@ Your core objectives:
       return getCuratedResponse(params.prompt);
     }
 
-    // Attach relevant verified cancer citations
     const sources: Source[] = [
       TRUSTED_SOURCES.nci_chemo,
       TRUSTED_SOURCES.acs_chemo_side_effects,
@@ -253,7 +248,6 @@ export async function generateDoctorVisitSummary(params: {
 }> {
   const { appointment, journalEntries, medications, patientNotes, customQuestions } = params;
 
-  // Synthesize symptom trends from entries
   const symptomFrequency: Record<string, number> = {};
   let maxSeverity = 0;
   const recentNotes: string[] = [];

@@ -5,7 +5,6 @@ import { Navbar } from './components/layout/Navbar';
 import { Footer } from './components/layout/Footer';
 import { AppLayout } from './components/layout/AppLayout';
 
-// Public Pages
 import { HomePage } from './pages/HomePage';
 import { AboutPage } from './pages/AboutPage';
 import { HowItWorksPage } from './pages/HowItWorksPage';
@@ -16,7 +15,6 @@ import { SignUpPage } from './pages/SignUpPage';
 import { ForgotPasswordPage } from './pages/ForgotPasswordPage';
 import { ContactFAQPage } from './pages/ContactFAQPage';
 
-// Workspace / Protected Pages
 import { DashboardPage } from './pages/DashboardPage';
 import { CarePlannerPage } from './pages/CarePlannerPage';
 import { AIAssistantPage } from './pages/AIAssistantPage';
@@ -32,7 +30,6 @@ function MainRouter() {
   const { user, isLoading, demoLogin } = useAuth();
   const { language } = useLanguage();
 
-  // Initialize page from window hash or default to 'home'
   const getInitialPage = () => {
     const hash = window.location.hash.replace('#/', '').replace('#', '');
     return hash || 'home';
@@ -40,7 +37,6 @@ function MainRouter() {
 
   const [currentPage, setCurrentPage] = useState<string>(getInitialPage);
 
-  // Sync hash with browser URL
   useEffect(() => {
     const handleHashChange = () => {
       const page = getInitialPage();
@@ -57,7 +53,6 @@ function MainRouter() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Protected workspace routes list
   const protectedPages = [
     'dashboard',
     'care-planner',
@@ -69,7 +64,6 @@ function MainRouter() {
     'settings',
   ];
 
-  // Route protection: if not logged in and accessing protected page, redirect to login
   useEffect(() => {
     if (!isLoading && !user && protectedPages.includes(currentPage)) {
       navigateTo('login');
@@ -87,7 +81,6 @@ function MainRouter() {
     );
   }
 
-  // Determine page category
   const isWorkspacePage = user && protectedPages.includes(currentPage);
   const isAuthPage = ['login', 'signup', 'forgot-password', 'reset-password'].includes(currentPage);
 
@@ -121,7 +114,6 @@ function MainRouter() {
       case 'reset-password':
         return <ForgotPasswordPage onNavigate={navigateTo} />;
 
-      // Workspace pages
       case 'dashboard':
         return <DashboardPage onNavigate={navigateTo} />;
       case 'care-planner':

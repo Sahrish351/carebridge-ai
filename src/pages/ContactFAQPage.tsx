@@ -19,7 +19,6 @@ interface ContactFAQPageProps {
 export const ContactFAQPage: React.FC<ContactFAQPageProps> = ({ initialTab = 'contact', onNavigate }) => {
   const [activeTab, setActiveTab] = useState<'contact' | 'faq' | 'privacy' | 'terms'>(initialTab);
 
-  // Form State
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [subject, setSubject] = useState('General Support');
@@ -67,7 +66,6 @@ export const ContactFAQPage: React.FC<ContactFAQPageProps> = ({ initialTab = 'co
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12">
-      {/* Top Tab Bar */}
       <div className="flex items-center justify-center">
         <div className="bg-slate-100 p-1.5 rounded-2xl flex items-center gap-1 overflow-x-auto text-xs">
           <button
@@ -112,8 +110,6 @@ export const ContactFAQPage: React.FC<ContactFAQPageProps> = ({ initialTab = 'co
           </button>
         </div>
       </div>
-
-      {/* CONTACT TAB */}
       {activeTab === 'contact' && (
         <div className="space-y-10">
           <div className="text-center max-w-2xl mx-auto space-y-3">
@@ -126,7 +122,6 @@ export const ContactFAQPage: React.FC<ContactFAQPageProps> = ({ initialTab = 'co
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
-            {/* Contact details */}
             <div className="md:col-span-5 bg-gradient-to-br from-indigo-900 via-indigo-800 to-slate-900 text-white rounded-3xl p-8 space-y-6 shadow-xl">
               <div className="space-y-2">
                 <span className="text-xs font-bold uppercase tracking-wider text-rose-300 font-script text-xl">
@@ -169,8 +164,6 @@ export const ContactFAQPage: React.FC<ContactFAQPageProps> = ({ initialTab = 'co
                 <span>Encrypted transmission & zero data brokering.</span>
               </div>
             </div>
-
-            {/* Message Form */}
             <div className="md:col-span-7 bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xs space-y-4">
               <h3 className="text-lg font-bold text-slate-900">Send Us a Message</h3>
 
@@ -245,8 +238,6 @@ export const ContactFAQPage: React.FC<ContactFAQPageProps> = ({ initialTab = 'co
           </div>
         </div>
       )}
-
-      {/* FAQ TAB */}
       {activeTab === 'faq' && (
         <div className="space-y-8 max-w-3xl mx-auto">
           <div className="text-center space-y-2">
@@ -288,8 +279,6 @@ export const ContactFAQPage: React.FC<ContactFAQPageProps> = ({ initialTab = 'co
           </div>
         </div>
       )}
-
-      {/* PRIVACY POLICY TAB */}
       {activeTab === 'privacy' && (
         <div className="bg-white rounded-3xl p-8 sm:p-10 border border-slate-200 shadow-xs space-y-6 max-w-3xl mx-auto text-slate-700 text-sm leading-relaxed">
           <h2 className="text-2xl font-bold text-slate-900">Privacy Policy</h2>
@@ -324,8 +313,6 @@ export const ContactFAQPage: React.FC<ContactFAQPageProps> = ({ initialTab = 'co
           </section>
         </div>
       )}
-
-      {/* TERMS OF SERVICE TAB */}
       {activeTab === 'terms' && (
         <div className="bg-white rounded-3xl p-8 sm:p-10 border border-slate-200 shadow-xs space-y-6 max-w-3xl mx-auto text-slate-700 text-sm leading-relaxed">
           <h2 className="text-2xl font-bold text-slate-900">Terms of Service & Medical Disclaimer</h2>

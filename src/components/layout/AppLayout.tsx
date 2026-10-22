@@ -33,7 +33,6 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ currentPage, onNavigate, c
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
 
-  // Role-specific navigation items
   const getNavItems = () => {
     switch (user?.role) {
       case 'caregiver':
@@ -85,7 +84,6 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ currentPage, onNavigate, c
 
   return (
     <div className="h-screen w-full bg-[#F8FAFD] flex flex-col md:flex-row overflow-hidden font-sans">
-      {/* Mobile Top Header */}
       <div className="md:hidden bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between sticky top-0 z-30 shrink-0">
         <button
           onClick={() => handleNavClick('dashboard')}
@@ -113,14 +111,11 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ currentPage, onNavigate, c
           </button>
         </div>
       </div>
-
-      {/* Sidebar for Desktop & Mobile drawer (Full height, vertical flex, no empty gaps) */}
       <aside
         className={`fixed inset-y-0 left-0 z-40 w-64 bg-white border-r border-slate-200/90 flex flex-col h-full transform transition-transform duration-200 ease-in-out md:translate-x-0 md:static shrink-0 select-none ${
           mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        {/* 1. Header & Brand (Fixed natural height) */}
         <div className="p-5 border-b border-slate-100 flex items-center justify-between shrink-0">
           <button
             onClick={() => handleNavClick('home')}
@@ -150,8 +145,6 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ currentPage, onNavigate, c
             <X className="w-5 h-5" />
           </button>
         </div>
-
-        {/* 2. User Profile Card (Fixed natural height) */}
         {user && (
           <div className="px-3 pt-3 shrink-0">
             <div className="p-3 bg-slate-50/90 rounded-2xl border border-slate-100 flex items-center gap-3">
@@ -184,8 +177,6 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ currentPage, onNavigate, c
             </div>
           </div>
         )}
-
-        {/* 3. Navigation Links (Naturally grouped with uniform spacing, scrollable on small viewports) */}
         <div className="flex-1 overflow-y-auto px-3 py-3 space-y-1">
           <nav className="space-y-1">
             {navItems.map((item) => {
@@ -195,7 +186,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ currentPage, onNavigate, c
                 <button
                   key={item.id}
                   onClick={() => handleNavClick(item.id)}
-                  className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all cursor-pointer ${
+                  className={`w-full min-h-[44px] flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all cursor-pointer ${
                     isActive
                       ? 'bg-indigo-600 text-white shadow-xs font-semibold'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
@@ -209,13 +200,10 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ currentPage, onNavigate, c
             })}
           </nav>
         </div>
-
-        {/* 4. Bottom Utility Area (Settings + Logout placed together with subtle divider) */}
         <div className="p-3 border-t border-slate-100/90 bg-white shrink-0 space-y-1">
-          {/* Settings button */}
           <button
             onClick={() => handleNavClick('settings')}
-            className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all cursor-pointer ${
+            className={`w-full min-h-[44px] flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all cursor-pointer ${
               currentPage === 'settings'
                 ? 'bg-indigo-600 text-white shadow-xs font-semibold'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
@@ -225,17 +213,13 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ currentPage, onNavigate, c
             <span>Settings</span>
             {currentPage === 'settings' && <ChevronRight className="w-3.5 h-3.5 ml-auto text-indigo-200 shrink-0" />}
           </button>
-
-          {/* Logout button */}
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:text-rose-600 hover:bg-rose-50/80 transition-colors cursor-pointer group"
+            className="w-full min-h-[44px] flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:text-rose-600 hover:bg-rose-50/80 transition-colors cursor-pointer group"
           >
             <LogOut className="w-4 h-4 text-slate-400 group-hover:text-rose-500 transition-colors shrink-0" />
             <span>Log Out</span>
           </button>
-
-          {/* Subtle session indicator */}
           <div className="pt-2 px-1 flex items-center justify-between text-[10px] text-slate-400 font-medium">
             <span className="flex items-center gap-1 text-slate-500">
               <Shield className="w-3 h-3 text-indigo-500 shrink-0" />
@@ -245,18 +229,13 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ currentPage, onNavigate, c
           </div>
         </div>
       </aside>
-
-      {/* Backdrop for mobile */}
       {mobileSidebarOpen && (
         <div
           onClick={() => setMobileSidebarOpen(false)}
           className="fixed inset-0 bg-slate-900/30 backdrop-blur-xs z-30 md:hidden"
         />
       )}
-
-      {/* Main Workspace Body - Independently scrollable */}
       <div className="flex-1 flex flex-col h-full overflow-hidden min-w-0">
-        {/* Workspace Top Bar */}
         <header className="hidden md:flex h-16 bg-white border-b border-slate-200/90 px-8 items-center justify-between sticky top-0 z-20 shrink-0">
           <div className="flex items-center gap-2">
             <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
@@ -273,15 +252,12 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ currentPage, onNavigate, c
           </div>
 
           <div className="flex items-center gap-4">
-            {/* Language Switch */}
             <button
               onClick={() => setLanguage(language === 'en' ? 'ur' : 'en')}
               className="px-2.5 py-1 text-xs font-medium text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors cursor-pointer"
             >
               {language === 'en' ? 'اردو میں دیکھیں' : 'Switch to English'}
             </button>
-
-            {/* Notifications */}
             <div className="relative">
               <button
                 onClick={() => setNotificationsOpen(!notificationsOpen)}
@@ -322,8 +298,6 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ currentPage, onNavigate, c
                 </div>
               )}
             </div>
-
-            {/* Help / Guide */}
             <button
               onClick={() => onNavigate('about')}
               className="p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg cursor-pointer"
@@ -333,9 +307,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ currentPage, onNavigate, c
             </button>
           </div>
         </header>
-
-        {/* Content Area - Scrollable */}
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
+        <main className="flex-1 overflow-y-auto p-3 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
           {children}
         </main>
       </div>

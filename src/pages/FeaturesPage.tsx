@@ -163,7 +163,6 @@ export const FeaturesPage: React.FC<FeaturesPageProps> = ({ onNavigate }) => {
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-20">
-      {/* Page Title */}
       <div className="text-center max-w-3xl mx-auto space-y-4">
         <span className="inline-block px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-xs font-bold tracking-wide uppercase">
           Comprehensive Feature Suite
@@ -175,8 +174,6 @@ export const FeaturesPage: React.FC<FeaturesPageProps> = ({ onNavigate }) => {
           Every screen in CareBridge AI has been engineered to relieve mental strain, protect patient dignity, and enhance clinical collaboration.
         </p>
       </div>
-
-      {/* Feature Deep Dives */}
       <div className="space-y-16">
         {featureBlocks.map((feat, idx) => {
           const Icon = feat.icon;
@@ -224,8 +221,6 @@ export const FeaturesPage: React.FC<FeaturesPageProps> = ({ onNavigate }) => {
           );
         })}
       </div>
-
-      {/* Caregiver & Multilingual Banner */}
       <div className="bg-gradient-to-tr from-indigo-900 to-slate-900 rounded-3xl p-8 sm:p-12 text-white grid grid-cols-1 md:grid-cols-2 gap-8 items-center shadow-xl">
         <div className="space-y-4">
           <div className="inline-flex items-center gap-2 text-rose-300 font-script text-xl">

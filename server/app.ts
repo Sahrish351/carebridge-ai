@@ -8,7 +8,6 @@ dotenv.config();
 
 export const app = express();
 
-// Enable CORS for same-origin and preview deployments
 app.use((req, res, next) => {
   const origin = req.headers.origin;
   if (origin) {
@@ -30,7 +29,6 @@ app.use((req, res, next) => {
 app.use(express.json());
 app.use(cookieParser());
 
-// Health check endpoint (serves both /healthz and /api/healthz)
 const healthHandler = async (_req: express.Request, res: express.Response) => {
   const dbStatus = await db.checkConnection();
   res.json({
@@ -46,7 +44,6 @@ const healthHandler = async (_req: express.Request, res: express.Response) => {
 app.get('/healthz', healthHandler);
 app.get('/api/healthz', healthHandler);
 
-// Mount API router at both /api and root to handle any Vercel rewrite scenario
 app.use('/api', apiRouter);
 app.use('/', apiRouter);
 

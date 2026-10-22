@@ -20,7 +20,6 @@ async function runTestSuite() {
   console.log(' CareBridge AI - Automated Verification Suite');
   console.log('=============================================\n');
 
-  // 1. Initial Seed Data
   console.log('--- 1. Seed Data & Database Engine ---');
   const patient = await db.getUserByEmail('areeba@example.com');
   assert(!!patient, 'Default patient user (areeba@example.com) exists');
@@ -35,12 +34,10 @@ async function runTestSuite() {
   assert(!!doctor, 'Default doctor user (saman@example.com) exists');
   assert(doctor?.role === 'doctor', 'Dr. Saman Ali has doctor role');
 
-  // 2. Authentication & Passwords
   console.log('\n--- 2. Authentication & PBKDF2 Password Hashing ---');
   assert(db.verifyPassword(patient!, 'password123'), 'Correct password verifies successfully');
   assert(!db.verifyPassword(patient!, 'wrongpassword'), 'Incorrect password fails verification');
 
-  // Test registration with unique email
   const testEmail = `test_${Date.now()}@example.com`;
   const newUser = await db.createUser({
     name: 'Test Cancer Patient',
@@ -51,13 +48,11 @@ async function runTestSuite() {
   assert(!!newUser.id, 'User registration successfully generated a new ID');
   assert(newUser.email === testEmail, 'New user email stored in lowercase');
 
-  // Session creation & validation
   const session = await db.createSession(newUser.id);
   assert(!!session.token, 'Session token generated successfully');
   const retrievedSession = await db.getSession(session.token);
   assert(retrievedSession?.userId === newUser.id, 'Session correctly retrieves user ID');
 
-  // 3. Appointments Management
   console.log('\n--- 3. Care Planner & Appointments ---');
   const initialApts = await db.getAppointments(patient!.id);
   assert(initialApts.length >= 3, `Patient has initial seeded appointments (count: ${initialApts.length})`);
@@ -84,7 +79,6 @@ async function runTestSuite() {
   const afterDeleteApts = await db.getAppointments(patient!.id);
   assert(!afterDeleteApts.some((a) => a.id === newApt.id), 'Appointment deleted successfully');
 
-  // 4. Symptom Journal
   console.log('\n--- 4. Symptom Journal & Severity Tracking ---');
   const initialJournal = await db.getJournalEntries(patient!.id);
   assert(initialJournal.length >= 3, `Patient has initial symptom entries (count: ${initialJournal.length})`);
@@ -108,7 +102,6 @@ async function runTestSuite() {
   const afterDeleteJournal = await db.getJournalEntries(patient!.id);
   assert(!afterDeleteJournal.some((j) => j.id === newEntry.id), 'Symptom entry deleted successfully');
 
-  // 5. Daily Self-Care Tasks
   console.log('\n--- 5. Daily Tasks & Routine Support ---');
   const tasks = await db.getDailyTasks(patient!.id, '2026-10-28');
   assert(tasks.length >= 4, `Tasks available for patient (count: ${tasks.length})`);
@@ -117,9 +110,8 @@ async function runTestSuite() {
   const initialCompleted = firstTask.completed;
   const toggledTask = await db.toggleDailyTask(patient!.id, firstTask.id);
   assert(toggledTask.completed === !initialCompleted, 'Daily task toggle flips completed status');
-  await db.toggleDailyTask(patient!.id, firstTask.id); // restore
+  await db.toggleDailyTask(patient!.id, firstTask.id);
 
-  // 6. Caregiver Permissions & Consent
   console.log('\n--- 6. Caregiver Consent & Delegation Permissions ---');
   const perms = await db.getCaregiverPermissions(patient!.id);
   assert(perms.length >= 1, `Caregiver permissions record found for patient (count: ${perms.length})`);
@@ -128,7 +120,6 @@ async function runTestSuite() {
   assert(sharedPatients.length >= 1, 'Caregiver can access authorized patient record');
   assert(sharedPatients[0].patient.email === 'areeba@example.com', 'Authorized patient is Areeba Khan');
 
-  // Add temporary permission
   const tempPerm = await db.addCaregiverPermission(patient!.id, {
     caregiverEmail: 'helper@example.com',
     caregiverName: 'Nurse Helper',
@@ -146,7 +137,6 @@ async function runTestSuite() {
   const foundRevoked = revokedList.find((p) => p.id === tempPerm.id);
   assert(foundRevoked?.status === 'revoked', 'Caregiver permission safely revoked');
 
-  // 7. Doctor Visit Summary Generation
   console.log('\n--- 7. Doctor Visit Preparation Agenda Synthesis ---');
   const currentApts = await db.getAppointments(patient!.id);
   const journalEntries = await db.getJournalEntries(patient!.id);
@@ -163,7 +153,6 @@ async function runTestSuite() {
   assert(summary.questionsForDoctor.length >= 3, 'Doctor consultation questions generated');
   assert(summary.questionsForDoctor.includes('Can I take magnesium for muscle cramps?'), 'Custom patient question retained');
 
-  // 8. AI Assistant & Evidence-Based Grounding
   console.log('\n--- 8. AI Assistant Safe Fallback & Source Grounding ---');
   const chemoResponse = await askAiAssistant({
     prompt: 'How can I manage chemotherapy nausea?',
@@ -176,14 +165,12 @@ async function runTestSuite() {
   assert(chemoResponse.sources.some((s) => s.organization === 'American Cancer Society' || s.organization === 'National Cancer Institute'), 'Sources cite authoritative oncology bodies');
   assert(chemoResponse.disclaimer.includes('educational'), 'Clinical educational disclaimer attached');
 
-  // Emergency safety response
   const emergencyResponse = await askAiAssistant({
     prompt: 'I have a fever of 101F and chills during chemo',
     userName: 'Areeba',
   });
   assert(emergencyResponse.content.includes('Immediately') || emergencyResponse.content.includes('emergency') || emergencyResponse.content.includes('100.4'), 'Fever prompt triggers urgent triage guidance');
 
-  // 9. Password Reset
   console.log('\n--- 9. Password Reset Flow ---');
   const resetToken = await db.createPasswordResetToken(patient!.email);
   assert(!!resetToken, 'Password reset token generated');
@@ -191,18 +178,15 @@ async function runTestSuite() {
   assert(resetSuccess, 'Password reset succeeded with token');
   const refreshedPatient = await db.getUserByEmail(patient!.email);
   assert(db.verifyPassword(refreshedPatient!, 'newPassword2026!'), 'New password verifies successfully');
-  // Restore original password for consistency
   const restoreToken = await db.createPasswordResetToken(patient!.email);
   await db.resetPasswordWithToken(restoreToken, 'password123');
 
-  // 10. User Deletion & Cleanup
   console.log('\n--- 10. GDPR Clean Data Purge ---');
   await db.deleteUserData(newUser.id);
   assert(!(await db.getUserById(newUser.id)), 'Test user permanently deleted');
   await db.deleteSession(session.token);
   assert(!(await db.getSession(session.token)), 'Test session invalidated');
 
-  // 11. Database Connection & Diagnostics Check
   console.log('\n--- 11. Database Connectivity Diagnostics ---');
   const connStatus = await db.checkConnection();
   assert(connStatus.connected, `Database engine responsive (Storage: ${connStatus.storage})`);

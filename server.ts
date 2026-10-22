@@ -12,7 +12,6 @@ async function startServer() {
   const isProduction = process.env.NODE_ENV === 'production';
 
   if (!isProduction) {
-    // Development mode with Vite dev middleware
     const vite = await createViteServer({
       server: {
         middlewareMode: true,
@@ -24,7 +23,6 @@ async function startServer() {
 
     app.use(vite.middlewares);
   } else {
-    // Standalone production mode: serve built assets from dist
     const distPath = path.resolve(__dirname, 'dist');
     app.use(express.static(distPath));
     app.get('*', (_req, res) => {

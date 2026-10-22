@@ -25,19 +25,16 @@ export const DoctorVisitPrepPage: React.FC<DoctorVisitPrepPageProps> = ({ onNavi
   const [summaries, setSummaries] = useState<VisitSummary[]>([]);
   const [selectedAptId, setSelectedAptId] = useState<string>('');
 
-  // Options
   const [includeSymptoms, setIncludeSymptoms] = useState(true);
   const [includeMedications, setIncludeMedications] = useState(true);
   const [includeQuestions, setIncludeQuestions] = useState(true);
   const [customNotes, setCustomNotes] = useState('');
 
-  // Generated Summary state
   const [currentSummary, setCurrentSummary] = useState<VisitSummary | null>(null);
   const [generating, setGenerating] = useState(false);
   const [copied, setCopied] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
 
-  // New question draft
   const [newQuestion, setNewQuestion] = useState('');
 
   const sampleQuestions = [
@@ -87,7 +84,6 @@ export const DoctorVisitPrepPage: React.FC<DoctorVisitPrepPageProps> = ({ onNavi
 
       setCurrentSummary(summary);
 
-      // Auto save
       const saved = await api.saveVisitSummary({
         appointmentId: summary.appointmentId,
         appointmentTitle: summary.appointmentTitle,
@@ -162,7 +158,6 @@ ${currentSummary.patientNotes}
 
   return (
     <div className="space-y-8 pb-12">
-      {/* Page Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 no-print">
         <div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
@@ -174,28 +169,25 @@ ${currentSummary.patientNotes}
         </div>
 
         {currentSummary && (
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
             <button
               onClick={handleCopy}
-              className="px-4 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl text-xs font-bold shadow-xs transition-colors flex items-center gap-1.5"
+              className="flex-1 sm:flex-initial px-3.5 sm:px-4 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl text-xs font-bold shadow-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
             >
               {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
-              <span>{copied ? 'Copied to Clipboard' : 'Copy Text'}</span>
+              <span>{copied ? 'Copied' : 'Copy Text'}</span>
             </button>
             <button
               onClick={handlePrint}
-              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-xs transition-colors flex items-center gap-1.5"
+              className="flex-1 sm:flex-initial px-3.5 sm:px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
             >
               <Printer className="w-4 h-4" />
-              <span>Print / Save PDF</span>
+              <span>Print / PDF</span>
             </button>
           </div>
         )}
       </div>
-
-      {/* Main Grid: Controls on Left (5 cols), Summary View on Right (7 cols) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* Left Column: Generate Controls & Sample Questions (5 cols) */}
         <div className="lg:col-span-5 space-y-6 no-print">
           <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-xs space-y-5">
             <h2 className="text-lg font-bold text-slate-900">Generate Visit Summary</h2>
@@ -221,8 +213,6 @@ ${currentSummary.patientNotes}
                   <p className="text-slate-400 italic">No appointments booked. Please add one first.</p>
                 )}
               </div>
-
-              {/* Checkboxes matching visual reference */}
               <div className="space-y-2 pt-1">
                 <span className="font-bold text-slate-700 block mb-1">Include in Summary</span>
                 <label className="flex items-center gap-2 cursor-pointer text-slate-700">
@@ -285,8 +275,6 @@ ${currentSummary.patientNotes}
               )}
             </div>
           </div>
-
-          {/* Sample Questions Bank matching visual reference */}
           <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-xs space-y-4">
             <h3 className="text-sm font-bold text-slate-900">Sample High-Value Questions</h3>
             <p className="text-xs text-slate-500">
@@ -306,12 +294,9 @@ ${currentSummary.patientNotes}
             </div>
           </div>
         </div>
-
-        {/* Right Column: Printable Summary Document (7 cols) */}
         <div className="lg:col-span-7 space-y-6">
           {currentSummary ? (
             <div className="bg-white rounded-3xl p-6 sm:p-8 border-2 border-indigo-100 shadow-lg space-y-6 print-shadow-none">
-              {/* Document Header */}
               <div className="border-b border-slate-200 pb-5 space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-2.5 py-0.5 rounded-md">
@@ -333,8 +318,6 @@ ${currentSummary.patientNotes}
                   *Notice: Patient-prepared summary to guide discussion. Not a clinical assessment or diagnosis.*
                 </p>
               </div>
-
-              {/* Chief Concerns */}
               <div className="space-y-2 text-xs">
                 <h3 className="font-bold uppercase tracking-wider text-slate-500">
                   1. Chief Discussion Priorities
@@ -348,8 +331,6 @@ ${currentSummary.patientNotes}
                   className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-xs focus:bg-white focus:outline-none"
                 />
               </div>
-
-              {/* Recent Symptoms & Tolerance */}
               <div className="space-y-2 text-xs">
                 <h3 className="font-bold uppercase tracking-wider text-slate-500">
                   2. Reported Symptoms & Tolerance Summary
@@ -363,8 +344,6 @@ ${currentSummary.patientNotes}
                   className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-xs focus:bg-white focus:outline-none"
                 />
               </div>
-
-              {/* Current Medications */}
               <div className="space-y-2 text-xs">
                 <h3 className="font-bold uppercase tracking-wider text-slate-500">
                   3. Current Regimen & Medications
@@ -373,8 +352,6 @@ ${currentSummary.patientNotes}
                   {currentSummary.currentMedications.join(' · ')}
                 </div>
               </div>
-
-              {/* Questions for Doctor */}
               <div className="space-y-3 text-xs">
                 <div className="flex items-center justify-between">
                   <h3 className="font-bold uppercase tracking-wider text-slate-500">
@@ -403,8 +380,6 @@ ${currentSummary.patientNotes}
                     </div>
                   ))}
                 </div>
-
-                {/* Add question inline */}
                 <div className="flex items-center gap-2 pt-1 no-print">
                   <input
                     type="text"
@@ -422,8 +397,6 @@ ${currentSummary.patientNotes}
                   </button>
                 </div>
               </div>
-
-              {/* Patient Notes */}
               <div className="space-y-2 text-xs">
                 <h3 className="font-bold uppercase tracking-wider text-slate-500">
                   5. Caregiver & Lifestyle Notes
@@ -437,11 +410,9 @@ ${currentSummary.patientNotes}
                   className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-xs focus:bg-white focus:outline-none"
                 />
               </div>
-
-              {/* Signature / Date line for clinic */}
-              <div className="pt-6 border-t border-slate-200 flex justify-between text-[11px] text-slate-400">
+              <div className="pt-6 border-t border-slate-200 flex flex-col sm:flex-row justify-between gap-2 text-[11px] text-slate-400">
                 <span>CareBridge AI · CodeTheCure 2026</span>
-                <span>Reviewed by Patient / Caregiver: ___________________</span>
+                <span className="truncate">Reviewed by Patient / Caregiver: ___________________</span>
               </div>
             </div>
           ) : (

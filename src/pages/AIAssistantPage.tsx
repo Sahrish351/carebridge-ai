@@ -97,7 +97,6 @@ How can I support your care journey today?`,
         setMessages([welcomeMsg]);
       }
     } catch {
-      // Fallback greeting if sessions can't be fetched
       const welcomeMsg: ChatMessage = {
         id: 'welcome_offline',
         role: 'assistant',
@@ -166,7 +165,6 @@ I am ready to help answer questions about your treatment, coping strategies, and
         try {
           await api.clearAiSession(sessionId);
         } catch {
-          // ignore
         }
       }
       setMessages([
@@ -184,7 +182,6 @@ I am ready to help answer questions about your treatment, coping strategies, and
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 pb-12">
-      {/* Header bar with connection status */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2.5">
@@ -220,18 +217,13 @@ I am ready to help answer questions about your treatment, coping strategies, and
           </button>
         </div>
       </div>
-
-      {/* Safety & Emergency Warning */}
       <div className="p-4 bg-gradient-to-r from-amber-50 to-orange-50/50 border border-amber-200/90 rounded-2xl flex items-start gap-3 text-xs text-amber-900 leading-relaxed shadow-xs">
         <ShieldAlert className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
         <div>
           <strong className="font-bold text-amber-950">Important Clinical Boundaries:</strong> CareBridge AI is an organization and educational support tool. It does not provide medical diagnoses, alter prescriptions, or replace your licensed care team. If you experience a fever &ge; 100.4&deg;F (38.0&deg;C), acute chest pain, or severe shortness of breath, call your oncology triage emergency number or local emergency services immediately.
         </div>
       </div>
-
-      {/* Main Chat Interface */}
       <div className="bg-white rounded-3xl border border-slate-200 shadow-md shadow-indigo-100/30 flex flex-col justify-between overflow-hidden">
-        {/* Messages Stream */}
         <div className="p-5 sm:p-7 space-y-6 max-h-[580px] overflow-y-auto">
           {messages.map((msg) => {
             const isUser = msg.role === 'user';
@@ -247,16 +239,13 @@ I am ready to help answer questions about your treatment, coping strategies, and
                 )}
 
                 <div
-                  className={`max-w-[85%] sm:max-w-[80%] rounded-2xl p-4 sm:p-5 text-sm leading-relaxed ${
+                  className={`max-w-[92%] sm:max-w-[80%] rounded-2xl p-3.5 sm:p-5 text-sm leading-relaxed ${
                     isUser
                       ? 'bg-indigo-600 text-white shadow-sm'
                       : 'bg-slate-50/90 border border-slate-200/90 text-slate-800'
                   }`}
                 >
-                  {/* Message body */}
                   <div className="whitespace-pre-line space-y-2">{msg.content}</div>
-
-                  {/* Sources List */}
                   {msg.sources && msg.sources.length > 0 && (
                     <div className="mt-4 pt-3.5 border-t border-slate-200/80 space-y-2">
                       <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
@@ -279,8 +268,6 @@ I am ready to help answer questions about your treatment, coping strategies, and
                       </div>
                     </div>
                   )}
-
-                  {/* Message Footer with Copy Control and Disclaimer */}
                   <div className="mt-3 pt-2 flex items-center justify-between text-[11px] text-slate-400">
                     <span className="italic">
                       {isUser ? 'Sent by you' : 'Educational response · CareBridge AI'}
@@ -343,8 +330,6 @@ I am ready to help answer questions about your treatment, coping strategies, and
 
           <div ref={messagesEndRef} />
         </div>
-
-        {/* Suggested Prompts Drawer */}
         <div className="px-5 sm:px-7 py-3 bg-slate-50/80 border-t border-slate-100 space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
@@ -366,8 +351,6 @@ I am ready to help answer questions about your treatment, coping strategies, and
             ))}
           </div>
         </div>
-
-        {/* Chat Input Bar */}
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -392,12 +375,12 @@ I am ready to help answer questions about your treatment, coping strategies, and
               <Send className="w-4 h-4" />
             </button>
           </div>
-          <div className="mt-2 flex items-center justify-between text-[11px] text-slate-400 px-1">
-            <span>Server-side verification active · No API keys exposed</span>
+          <div className="mt-2 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 text-[11px] text-slate-400 px-1">
+            <span>Server-side verification active · Evidence-grounded</span>
             <button
               type="button"
               onClick={() => onNavigate('resources')}
-              className="hover:text-indigo-600 font-medium"
+              className="hover:text-indigo-600 font-medium cursor-pointer"
             >
               View Trusted Oncology Guides →
             </button>
