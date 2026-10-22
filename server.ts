@@ -2,30 +2,14 @@ import express from 'express';
 import { createServer as createViteServer } from 'vite';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import cookieParser from 'cookie-parser';
-import dotenv from 'dotenv';
-import { apiRouter } from './server/routes.js';
-
-dotenv.config();
+import { app } from './server/app.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 async function startServer() {
-  const app = express();
   const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
   const isProduction = process.env.NODE_ENV === 'production';
-
-  app.use(express.json());
-  app.use(cookieParser());
-
-  // Mount API router
-  app.use('/api', apiRouter);
-
-  // Health check endpoint
-  app.get('/healthz', (_req, res) => {
-    res.json({ status: 'ok', app: 'CareBridge AI' });
-  });
 
   if (!isProduction) {
     // Development mode with Vite dev middleware
@@ -40,7 +24,7 @@ async function startServer() {
 
     app.use(vite.middlewares);
   } else {
-    // Production mode: serve built assets from dist
+    // Standalone production mode: serve built assets from dist
     const distPath = path.resolve(__dirname, 'dist');
     app.use(express.static(distPath));
     app.get('*', (_req, res) => {

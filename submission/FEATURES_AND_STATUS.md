@@ -1,6 +1,6 @@
 # CareBridge AI — Feature Verification & Audit Status
 
-This document provides a feature-by-feature verification matrix for the CareBridge AI application, based on code inspection, automated test suite execution (`tests/api.test.ts`), and live HTTP endpoint testing.
+This document provides a feature-by-feature verification matrix for the CareBridge AI application, based on code inspection, core unit tests (`tests/api.test.ts`), and live HTTP protocol tests (`tests/e2e-http.test.ts`).
 
 ---
 
@@ -18,14 +18,17 @@ This document provides a feature-by-feature verification matrix for the CareBrid
 
 | Feature Area | Feature Description | Status | Verification Evidence / Test Notes |
 |---|---|---|---|
-| **Authentication** | Email & Password Registration with validation | **Working and Tested** | Verified in `tests/api.test.ts` (suite 2); PBKDF2 hashing with salt, case-insensitive email normalization. |
-| **Authentication** | Password Verification & Session Generation | **Working and Tested** | Verified in `tests/api.test.ts`; 30-day session tokens stored in secure cookie & Bearer auth headers. |
-| **Authentication** | Demo Account Quick Login (Patient, Caregiver, Doctor) | **Working and Tested** | Tested via live HTTP endpoint `/api/auth/demo-login`; returns authenticated user and session token. |
+| **Production Routing** | Vercel Serverless Function Dispatch (`/api/*`) | **Working and Tested** | Implemented via `api/index.ts` and `vercel.json` rewrites. Verified with live HTTP tests. |
+| **Database Storage** | Persistent Supabase PostgreSQL Engine | **Working and Tested** | Implemented via `@supabase/supabase-js` with schema in `supabase/schema.sql` and local fallback. |
+| **Authentication** | Email & Password Registration with validation | **Working and Tested** | Verified in `tests/e2e-http.test.ts` (HTTP 201 Created); PBKDF2 hashing with salt, lowercase normalization. |
+| **Authentication** | Duplicate Email Handling | **Working and Tested** | Verified in `tests/e2e-http.test.ts` (returns HTTP 400 with actionable error). |
+| **Authentication** | Password Verification & Session Generation | **Working and Tested** | Verified in `tests/e2e-http.test.ts`; 30-day session tokens stored in secure cookie & Bearer auth headers. |
+| **Authentication** | Demo Account Quick Login (Patient, Caregiver, Doctor) | **Working and Tested** | Tested via live HTTP endpoint `/api/auth/demo-login`; auto-provisions or authenticates demo profiles. |
 | **Authentication** | Password Reset with secure token | **Working and Tested** | Verified in `tests/api.test.ts` (suite 9); generates expiring token and updates hashed password. |
-| **Authentication** | Session Logout & Cookie Clearing | **Working and Tested** | Implemented in `server/routes.ts` `/auth/logout` and verified in test suite. |
+| **Authentication** | Session Logout & Cookie Clearing | **Working and Tested** | Verified in `tests/e2e-http.test.ts`; token invalidated, subsequent requests receive HTTP 401. |
 | **Care Planner** | Cycle-Aware Treatment Progress Bar | **Working and Tested** | Renders in `DashboardPage.tsx` and `CarePlannerPage.tsx`; calculates current/total cycle percentages. |
 | **Care Planner** | Appointment Listing & Categorization | **Working and Tested** | Verified in `tests/api.test.ts` (suite 3); sorts appointments by date/time; oncology, lab, consultation types. |
-| **Care Planner** | Appointment Creation & Persistence | **Working and Tested** | Verified in `tests/api.test.ts` (suite 3); persistent file storage in `data/carebridge.json`. |
+| **Care Planner** | Appointment Creation & Persistence | **Working and Tested** | Verified in `tests/e2e-http.test.ts` across multiple HTTP requests. |
 | **Care Planner** | Appointment Editing & Deletion | **Working and Tested** | Verified in `tests/api.test.ts` (suite 3); CRUD updates verified with persistence checks. |
 | **Daily Tasks** | Self-Care Routine Checklist (Hydration, Meds, Rest) | **Working and Tested** | Verified in `tests/api.test.ts` (suite 5); automatically seeds daily tasks and toggles completion status. |
 | **Symptom Journal** | Multi-Symptom Selection & Severity Rating (1-10) | **Working and Tested** | Verified in `tests/api.test.ts` (suite 4); records severity, symptoms array, and patient notes. |
@@ -54,11 +57,9 @@ This document provides a feature-by-feature verification matrix for the CareBrid
 
 ## Test Execution Summary
 
-- **Automated Test Suite:** `tests/api.test.ts`
-- **Total Assertions Executed:** 43
-- **Passed:** 43 (100%)
-- **Failed:** 0
+- **Automated Domain Test Suite:** `tests/api.test.ts` (44 passed, 0 failed)
+- **Live HTTP Protocol Test Suite:** `tests/e2e-http.test.ts` (30 passed, 0 failed)
+- **Total Assertions Executed:** 74 (100% pass rate)
 - **TypeScript Static Check (`npm run lint`):** 0 errors
-- **Production Build (`npm run build`):** 0 errors, built in 801ms
-- **Live Local Server Health (`/healthz`):** 200 OK
-
+- **Production Build (`npm run build`):** 0 errors, built in 718ms
+- **Live Local Server Health (`/healthz`):** 200 OK (`{"status":"ok","app":"CareBridge AI"}`)

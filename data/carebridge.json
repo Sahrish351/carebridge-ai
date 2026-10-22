@@ -71,6 +71,54 @@
         "status": "completed"
       },
       "createdAt": "2026-08-15T09:00:00.000Z"
+    },
+    {
+      "id": "usr_1792680269886_0sjnc",
+      "email": "live_patient_1792680269817@example.com",
+      "passwordHash": "01b8c826789c81d230509b652204902e5f8f6edc20375247075e6ac929ac290324d22921db4717a118a004f4a6fb0c3613dd6dec4b747c349547dec6cff98675",
+      "name": "Fatima Zahra",
+      "role": "patient",
+      "language": "en",
+      "accessibility": {
+        "highContrast": false,
+        "fontSize": "normal",
+        "reducedMotion": false
+      },
+      "treatmentPlan": {
+        "regimen": "Standard Oncology Care Plan",
+        "currentCycle": 1,
+        "totalCycles": 6,
+        "startDate": "2026-10-22",
+        "nextDoseDate": "",
+        "oncologist": "Dr. Saman Ali",
+        "clinic": "Lahore Comprehensive Cancer Care Center",
+        "status": "in_progress"
+      },
+      "createdAt": "2026-10-22T14:44:29.887Z"
+    },
+    {
+      "id": "usr_1792680801773_5il3x",
+      "email": "live_patient_1792680801734@example.com",
+      "passwordHash": "01b8c826789c81d230509b652204902e5f8f6edc20375247075e6ac929ac290324d22921db4717a118a004f4a6fb0c3613dd6dec4b747c349547dec6cff98675",
+      "name": "Fatima Zahra",
+      "role": "patient",
+      "language": "en",
+      "accessibility": {
+        "highContrast": false,
+        "fontSize": "normal",
+        "reducedMotion": false
+      },
+      "treatmentPlan": {
+        "regimen": "Standard Oncology Care Plan",
+        "currentCycle": 1,
+        "totalCycles": 6,
+        "startDate": "2026-10-22",
+        "nextDoseDate": "",
+        "oncologist": "Dr. Saman Ali",
+        "clinic": "Lahore Comprehensive Cancer Care Center",
+        "status": "in_progress"
+      },
+      "createdAt": "2026-10-22T14:53:21.774Z"
     }
   ],
   "sessions": [
@@ -145,6 +193,54 @@
       "userId": "user_areeba_khan",
       "createdAt": 1792666678500,
       "expiresAt": 1795258678500
+    },
+    {
+      "token": "45719d7de4c988ff946675886fa465129ab058a1a960dffccf011e19382dc5ce",
+      "userId": "usr_1792680269886_0sjnc",
+      "createdAt": 1792680269925,
+      "expiresAt": 1795272269925
+    },
+    {
+      "token": "048ba76ba69de1e842265b538cc54f1914376dfc28e58ded345d2246be478111",
+      "userId": "user_areeba_khan",
+      "createdAt": 1792680269936,
+      "expiresAt": 1795272269936
+    },
+    {
+      "token": "3bc9a9e82f8740c2e1b5f9e5ea38a3f415b190685adf658b132345e9dac25d7a",
+      "userId": "user_tariq_khan",
+      "createdAt": 1792680269941,
+      "expiresAt": 1795272269941
+    },
+    {
+      "token": "7ec3b71324182af3efc7faddcc5df5c6179bb915403794ecff8926a08194db25",
+      "userId": "user_dr_saman",
+      "createdAt": 1792680269946,
+      "expiresAt": 1795272269946
+    },
+    {
+      "token": "08d36c8476df135654931b3a6cd25258f4a5f441fa9ca58831b3e36db84d22c7",
+      "userId": "usr_1792680801773_5il3x",
+      "createdAt": 1792680801835,
+      "expiresAt": 1795272801835
+    },
+    {
+      "token": "b524de83037c2f6c968042f1c1255750d8bde31e397a9d6488e53d8e599a9f08",
+      "userId": "user_areeba_khan",
+      "createdAt": 1792680801855,
+      "expiresAt": 1795272801855
+    },
+    {
+      "token": "561ec8ce003995f361fae5a699dc800f40dc3b63bc3d646b5c0a78d106922805",
+      "userId": "user_tariq_khan",
+      "createdAt": 1792680801863,
+      "expiresAt": 1795272801863
+    },
+    {
+      "token": "31c353e46ef7ea8279bddeededc8398e223ef94fe905f51a569c6adf517d7442",
+      "userId": "user_dr_saman",
+      "createdAt": 1792680801873,
+      "expiresAt": 1795272801873
     }
   ],
   "appointments": [
@@ -189,6 +285,34 @@
       "notes": "Review lab results before scheduling Cycle 3 infusion.",
       "reminder": true,
       "createdAt": "2026-10-18T11:30:00.000Z"
+    },
+    {
+      "id": "apt_1792680269905_pw9x",
+      "userId": "usr_1792680269886_0sjnc",
+      "title": "Cycle 1 Chemotherapy Infusion",
+      "doctor": "Dr. Saman Ali",
+      "specialty": "Oncology",
+      "date": "2026-11-05",
+      "time": "09:00 AM",
+      "location": "Infusion Suite 2B",
+      "type": "infusion",
+      "notes": "Pre-medications: dexamethasone and ondansetron 30 min prior.",
+      "reminder": true,
+      "createdAt": "2026-10-22T14:44:29.905Z"
+    },
+    {
+      "id": "apt_1792680801804_ezpa",
+      "userId": "usr_1792680801773_5il3x",
+      "title": "Cycle 1 Chemotherapy Infusion",
+      "doctor": "Dr. Saman Ali",
+      "specialty": "Oncology",
+      "date": "2026-11-05",
+      "time": "09:00 AM",
+      "location": "Infusion Suite 2B",
+      "type": "infusion",
+      "notes": "Pre-medications: dexamethasone and ondansetron 30 min prior.",
+      "reminder": true,
+      "createdAt": "2026-10-22T14:53:21.805Z"
     }
   ],
   "journalEntries": [
@@ -305,6 +429,38 @@
       "date": "2026-10-22",
       "title": "Rest & relax (Mindful breathing or nap)",
       "category": "rest",
+      "completed": false
+    },
+    {
+      "id": "tsk_1792680269887_1",
+      "userId": "usr_1792680269886_0sjnc",
+      "date": "2026-10-22",
+      "title": "Drink 2 liters of water & stay hydrated",
+      "category": "hydration",
+      "completed": false
+    },
+    {
+      "id": "tsk_1792680269887_2",
+      "userId": "usr_1792680269886_0sjnc",
+      "date": "2026-10-22",
+      "title": "15-minute gentle walk or resting meditation",
+      "category": "exercise",
+      "completed": false
+    },
+    {
+      "id": "tsk_1792680801774_1",
+      "userId": "usr_1792680801773_5il3x",
+      "date": "2026-10-22",
+      "title": "Drink 2 liters of water & stay hydrated",
+      "category": "hydration",
+      "completed": false
+    },
+    {
+      "id": "tsk_1792680801774_2",
+      "userId": "usr_1792680801773_5il3x",
+      "date": "2026-10-22",
+      "title": "15-minute gentle walk or resting meditation",
+      "category": "exercise",
       "completed": false
     }
   ],

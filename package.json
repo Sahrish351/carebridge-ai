@@ -9,11 +9,13 @@
     "start": "tsx server.ts",
     "preview": "vite preview",
     "test": "tsx tests/api.test.ts",
+    "test:e2e": "tsx tests/e2e-http.test.ts",
     "clean": "node -e \"const fs = require('fs'); fs.rmSync('dist', { recursive: true, force: true });\"",
     "lint": "tsc --noEmit"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",
+    "@supabase/supabase-js": "^2.118.0",
     "@tailwindcss/vite": "^4.3.3",
     "@vitejs/plugin-react": "^6.1.1",
     "cookie-parser": "^1.4.7",

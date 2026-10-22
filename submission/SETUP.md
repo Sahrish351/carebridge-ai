@@ -1,6 +1,6 @@
 # CareBridge AI — Setup & Deployment Guide
 
-This guide describes how to install, configure, test, and run CareBridge AI from a fresh clone.
+This guide describes how to install, configure, test, and deploy CareBridge AI locally and on Vercel with Supabase PostgreSQL.
 
 ---
 
@@ -13,7 +13,7 @@ This guide describes how to install, configure, test, and run CareBridge AI from
 
 ---
 
-## 2. Quick Start
+## 2. Quick Start (Local Development)
 
 ### Step 1: Clone the Repository
 
@@ -30,26 +30,28 @@ Use `--legacy-peer-deps` to handle React 19 peer dependencies:
 npm install --legacy-peer-deps
 ```
 
-### Step 3: Configure Environment Variables (Optional for Live Gemini)
+### Step 3: Configure Environment Variables (Optional)
 
-CareBridge AI includes an offline, evidence-grounded fallback mode that works immediately without any API keys.
+CareBridge AI operates out of the box with an embedded, transactional local storage engine and an offline, evidence-grounded knowledge bank.
 
-To enable live Google Gemini AI generation:
+To enable live Google Gemini AI generation or connect to Supabase:
 
 1. Copy the template file:
    ```bash
    cp .env.example .env
    ```
-2. Open `.env` and add your Gemini API key from [Google AI Studio](https://aistudio.google.com/):
+2. Open `.env` and fill in any desired credentials:
    ```ini
-   # Server-side Gemini API key
+   # Optional: Google Gemini API key
    GEMINI_API_KEY="AIzaSy..."
 
-   # Server port (default: 3000)
+   # Optional: Supabase PostgreSQL (Required only for Vercel production deployment)
+   SUPABASE_URL="https://your-project.supabase.co"
+   SUPABASE_SERVICE_ROLE_KEY="your-supabase-service-role-key"
+
+   # Server port
    PORT=3000
    ```
-
-> **Note:** Never commit `.env` or `.env.local` to Git. These are excluded by `.gitignore`.
 
 ### Step 4: Start the Development Server
 
@@ -62,7 +64,38 @@ The application will start on:
 
 ---
 
-## 3. Pre-Configured Demo Accounts
+## 3. Production Deployment on Vercel with Supabase
+
+CareBridge AI is designed with a serverless architecture ready for Vercel and Supabase PostgreSQL.
+
+### Step 1: Initialize Supabase Database
+
+1. Create a free project at [supabase.com](https://supabase.com).
+2. Go to **SQL Editor** -> Click **New Query**.
+3. Open [`supabase/schema.sql`](../supabase/schema.sql) in this repository, copy its entire contents, and paste it into the Supabase SQL Editor.
+4. Click **Run**. This creates:
+   - All 9 core tables (`users`, `sessions`, `appointments`, `journal_entries`, `daily_tasks`, `caregiver_permissions`, `chat_sessions`, `visit_summaries`, `password_reset_tokens`).
+   - Indexes and Row Level Security (RLS) policies.
+   - Pre-seeded demo accounts (`areeba@example.com`, `tariq@example.com`, `saman@example.com`).
+5. In Supabase, go to **Project Settings** -> **API**:
+   - Copy **Project URL** (`SUPABASE_URL`).
+   - Copy **service_role secret key** (`SUPABASE_SERVICE_ROLE_KEY`).
+
+### Step 2: Configure Vercel Project
+
+1. Import your GitHub repository into [Vercel](https://vercel.com).
+2. Under **Project Settings** -> **Environment Variables**, add:
+   - `SUPABASE_URL`: Your Supabase Project URL.
+   - `SUPABASE_SERVICE_ROLE_KEY`: Your Supabase Service Role Secret Key.
+   - `GEMINI_API_KEY`: *(Optional)* Your Google Gemini API Key.
+   - `NODE_ENV`: `production`
+3. Click **Deploy**.
+
+Vercel will build the frontend via `vite build` to `dist/`, deploy the backend serverless function via `api/index.ts`, and handle all routing seamlessly according to `vercel.json`.
+
+---
+
+## 4. Pre-Configured Demo Accounts
 
 CareBridge AI comes pre-seeded with sample profiles so evaluators can test workflows immediately without manual registration:
 
@@ -76,14 +109,20 @@ CareBridge AI comes pre-seeded with sample profiles so evaluators can test workf
 
 ---
 
-## 4. Verification & Testing
+## 5. Verification & Testing
 
-### Run Automated Tests
-
-To execute the test suite (43 assertions covering database operations, auth, appointments, journal, caregiver permissions, and AI fallback):
+### Run Automated Unit & Logic Tests (44 assertions)
 
 ```bash
 npm test
+```
+
+### Run Live End-to-End HTTP Protocol Tests (30 assertions)
+
+Tests live registration, duplicate email handling, session issuance, dashboard access, appointment persistence, logout, second login, and demo accounts:
+
+```bash
+npm run test:e2e
 ```
 
 ### Run Static TypeScript Linting
@@ -98,27 +137,22 @@ npm run lint
 npm run build
 ```
 
-The production assets will be built to the `dist/` directory.
-
-### Run in Production Mode
-
-```bash
-npm start
-```
-
 ---
 
-## 5. Technology Architecture
+## 6. Architecture Overview
 
 ```
 carebridge-ai/
+├── api/
+│   └── index.ts             # Vercel Serverless Function entry point
 ├── data/
-│   └── carebridge.json      # Persistent local database (auto-created if missing)
+│   └── carebridge.json      # Local transactional JSON database
 ├── public/
 │   └── assets/              # Static images and brand marks
 ├── server/
 │   ├── aiService.ts         # Google Gemini & grounded evidence fallback
-│   ├── db.ts                # Transactional database engine with PBKDF2 hashing
+│   ├── app.ts               # Express application with CORS & health handlers
+│   ├── db.ts                # Dual-engine DB (Supabase PostgreSQL + local JSON)
 │   └── routes.ts            # REST API endpoints for auth, care, journal, prep
 ├── src/
 │   ├── components/layout/   # AppLayout, Navbar, Footer
@@ -127,19 +161,14 @@ carebridge-ai/
 │   ├── services/api.ts      # Frontend API client
 │   ├── App.tsx              # Application router & protected routes
 │   └── main.tsx             # React DOM entry point
+├── supabase/
+│   └── schema.sql           # Complete Supabase PostgreSQL migration & seed SQL
 ├── tests/
-│   └── api.test.ts          # Automated verification test suite
+│   ├── api.test.ts          # Core database & domain test suite (44 assertions)
+│   └── e2e-http.test.ts     # Live HTTP protocol test suite (30 assertions)
 ├── package.json             # Scripts & dependencies
-├── server.ts                # Express backend + Vite dev middleware
+├── server.ts                # Express backend + Vite dev middleware (local dev)
 ├── tsconfig.json            # TypeScript compiler configuration
+├── vercel.json              # Vercel serverless routing & SPA rewrites
 └── vite.config.ts           # Vite build configuration
 ```
-
----
-
-## 6. Known Limitations & Hackathon Boundaries
-
-1. **Non-Clinical Software:** CareBridge AI is an organizational and educational support companion. It is **not** a certified medical device, does not diagnose cancer, and does not prescribe treatments.
-2. **Offline vs. Online AI:** When `GEMINI_API_KEY` is not provided, the AI Assistant relies on a curated knowledge bank grounded in published NCI, ACS, and Mayo Clinic guidance. It does not invent answers.
-3. **Local JSON Database:** For hackathon portability and ease of evaluation, the application uses an embedded JSON file database (`data/carebridge.json`). For hospital-scale deployment, this would be migrated to PostgreSQL with HIPAA-compliant row-level security.
-

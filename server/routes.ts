@@ -9,7 +9,7 @@ export interface AuthRequest extends Request {
   user?: User;
 }
 
-export function authMiddleware(req: AuthRequest, res: Response, next: NextFunction): void {
+export async function authMiddleware(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
   const token =
     req.cookies?.cb_session ||
     (req.headers.authorization?.startsWith('Bearer ') ? req.headers.authorization.slice(7) : null);
@@ -19,13 +19,13 @@ export function authMiddleware(req: AuthRequest, res: Response, next: NextFuncti
     return;
   }
 
-  const session = db.getSession(token);
+  const session = await db.getSession(token);
   if (!session) {
     res.status(401).json({ error: 'Invalid or expired session' });
     return;
   }
 
-  const user = db.getUserById(session.userId);
+  const user = await db.getUserById(session.userId);
   if (!user) {
     res.status(401).json({ error: 'User no longer exists' });
     return;
@@ -35,15 +35,15 @@ export function authMiddleware(req: AuthRequest, res: Response, next: NextFuncti
   next();
 }
 
-export function optionalAuthMiddleware(req: AuthRequest, _res: Response, next: NextFunction): void {
+export async function optionalAuthMiddleware(req: AuthRequest, _res: Response, next: NextFunction): Promise<void> {
   const token =
     req.cookies?.cb_session ||
     (req.headers.authorization?.startsWith('Bearer ') ? req.headers.authorization.slice(7) : null);
 
   if (token) {
-    const session = db.getSession(token);
+    const session = await db.getSession(token);
     if (session) {
-      const user = db.getUserById(session.userId);
+      const user = await db.getUserById(session.userId);
       if (user) {
         req.user = user;
       }
@@ -62,7 +62,7 @@ function sanitizeUser(user: User): Omit<User, 'passwordHash'> {
 // AUTH ROUTES
 // ==========================================
 
-apiRouter.post('/auth/register', (req: Request, res: Response): void => {
+apiRouter.post('/auth/register', async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, password, name, role } = req.body;
     if (!email || !password || !name) {
@@ -78,18 +78,18 @@ apiRouter.post('/auth/register', (req: Request, res: Response): void => {
     const validRoles = ['patient', 'caregiver', 'doctor'];
     const chosenRole = validRoles.includes(role) ? role : 'patient';
 
-    const user = db.createUser({
+    const user = await db.createUser({
       email,
       password,
       name,
       role: chosenRole,
     });
 
-    const session = db.createSession(user.id);
+    const session = await db.createSession(user.id);
     res.cookie('cb_session', session.token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       maxAge: 30 * 24 * 60 * 60 * 1000,
     });
 
@@ -102,7 +102,7 @@ apiRouter.post('/auth/register', (req: Request, res: Response): void => {
   }
 });
 
-apiRouter.post('/auth/login', (req: Request, res: Response): void => {
+apiRouter.post('/auth/login', async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, password } = req.body;
     if (!email || !password) {
@@ -110,17 +110,17 @@ apiRouter.post('/auth/login', (req: Request, res: Response): void => {
       return;
     }
 
-    const user = db.getUserByEmail(email);
+    const user = await db.getUserByEmail(email);
     if (!user || !db.verifyPassword(user, password)) {
       res.status(401).json({ error: 'Invalid email or password' });
       return;
     }
 
-    const session = db.createSession(user.id);
+    const session = await db.createSession(user.id);
     res.cookie('cb_session', session.token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       maxAge: 30 * 24 * 60 * 60 * 1000,
     });
 
@@ -133,24 +133,39 @@ apiRouter.post('/auth/login', (req: Request, res: Response): void => {
   }
 });
 
-apiRouter.post('/auth/demo-login', (req: Request, res: Response): void => {
+apiRouter.post('/auth/demo-login', async (req: Request, res: Response): Promise<void> => {
   try {
     const { role } = req.body;
     let targetEmail = 'areeba@example.com';
     if (role === 'caregiver') targetEmail = 'tariq@example.com';
     if (role === 'doctor') targetEmail = 'saman@example.com';
 
-    const user = db.getUserByEmail(targetEmail);
+    let user = await db.getUserByEmail(targetEmail);
     if (!user) {
-      res.status(404).json({ error: 'Demo account not initialized' });
-      return;
+      // In Supabase without seed executed, create the demo account automatically
+      const demoNames: Record<string, string> = {
+        'areeba@example.com': 'Areeba Khan',
+        'tariq@example.com': 'Tariq Khan',
+        'saman@example.com': 'Dr. Saman Ali',
+      };
+      const demoRoles: Record<string, 'patient' | 'caregiver' | 'doctor'> = {
+        'areeba@example.com': 'patient',
+        'tariq@example.com': 'caregiver',
+        'saman@example.com': 'doctor',
+      };
+      user = await db.createUser({
+        email: targetEmail,
+        password: 'password123',
+        name: demoNames[targetEmail] || 'Demo User',
+        role: demoRoles[targetEmail] || 'patient',
+      });
     }
 
-    const session = db.createSession(user.id);
+    const session = await db.createSession(user.id);
     res.cookie('cb_session', session.token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       maxAge: 30 * 24 * 60 * 60 * 1000,
     });
 
@@ -163,13 +178,13 @@ apiRouter.post('/auth/demo-login', (req: Request, res: Response): void => {
   }
 });
 
-apiRouter.post('/auth/logout', (req: Request, res: Response): void => {
+apiRouter.post('/auth/logout', async (req: Request, res: Response): Promise<void> => {
   const token =
     req.cookies?.cb_session ||
     (req.headers.authorization?.startsWith('Bearer ') ? req.headers.authorization.slice(7) : null);
 
   if (token) {
-    db.deleteSession(token);
+    await db.deleteSession(token);
   }
 
   res.clearCookie('cb_session');
@@ -180,16 +195,15 @@ apiRouter.get('/auth/me', authMiddleware, (req: AuthRequest, res: Response): voi
   res.json({ user: sanitizeUser(req.user!) });
 });
 
-apiRouter.post('/auth/forgot-password', (req: Request, res: Response): void => {
+apiRouter.post('/auth/forgot-password', async (req: Request, res: Response): Promise<void> => {
   const { email } = req.body;
   if (!email) {
     res.status(400).json({ error: 'Email address is required' });
     return;
   }
 
-  const user = db.getUserByEmail(email);
+  const user = await db.getUserByEmail(email);
   if (!user) {
-    // Security best practice: don't reveal email existence, but in evaluation give transparent hint
     res.json({
       success: true,
       message: 'If an account exists with this email, recovery instructions have been prepared.',
@@ -198,7 +212,7 @@ apiRouter.post('/auth/forgot-password', (req: Request, res: Response): void => {
     return;
   }
 
-  const resetToken = db.createPasswordResetToken(email);
+  const resetToken = await db.createPasswordResetToken(email);
   res.json({
     success: true,
     message: 'Password reset link generated.',
@@ -207,7 +221,7 @@ apiRouter.post('/auth/forgot-password', (req: Request, res: Response): void => {
   });
 });
 
-apiRouter.post('/auth/reset-password', (req: Request, res: Response): void => {
+apiRouter.post('/auth/reset-password', async (req: Request, res: Response): Promise<void> => {
   const { token, newPassword } = req.body;
   if (!token || !newPassword) {
     res.status(400).json({ error: 'Reset token and new password are required' });
@@ -219,7 +233,7 @@ apiRouter.post('/auth/reset-password', (req: Request, res: Response): void => {
     return;
   }
 
-  const ok = db.resetPasswordWithToken(token, newPassword);
+  const ok = await db.resetPasswordWithToken(token, newPassword);
   if (!ok) {
     res.status(400).json({ error: 'Invalid or expired password reset link' });
     return;
@@ -232,12 +246,16 @@ apiRouter.post('/auth/reset-password', (req: Request, res: Response): void => {
 // APPOINTMENTS ROUTES
 // ==========================================
 
-apiRouter.get('/appointments', authMiddleware, (req: AuthRequest, res: Response): void => {
-  const appointments = db.getAppointments(req.user!.id);
-  res.json(appointments);
+apiRouter.get('/appointments', authMiddleware, async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const appointments = await db.getAppointments(req.user!.id);
+    res.json(appointments);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Failed to fetch appointments' });
+  }
 });
 
-apiRouter.post('/appointments', authMiddleware, (req: AuthRequest, res: Response): void => {
+apiRouter.post('/appointments', authMiddleware, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const { title, doctor, specialty, date, time, location, type, notes, reminder } = req.body;
     if (!title || !date || !time) {
@@ -245,7 +263,7 @@ apiRouter.post('/appointments', authMiddleware, (req: AuthRequest, res: Response
       return;
     }
 
-    const appointment = db.createAppointment(req.user!.id, {
+    const appointment = await db.createAppointment(req.user!.id, {
       title,
       doctor: doctor || 'Oncology Team',
       specialty: specialty || 'Cancer Care',
@@ -263,18 +281,18 @@ apiRouter.post('/appointments', authMiddleware, (req: AuthRequest, res: Response
   }
 });
 
-apiRouter.put('/appointments/:id', authMiddleware, (req: AuthRequest, res: Response): void => {
+apiRouter.put('/appointments/:id', authMiddleware, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const updated = db.updateAppointment(req.user!.id, req.params.id, req.body);
+    const updated = await db.updateAppointment(req.user!.id, req.params.id, req.body);
     res.json(updated);
   } catch (err: any) {
     res.status(400).json({ error: err.message });
   }
 });
 
-apiRouter.delete('/appointments/:id', authMiddleware, (req: AuthRequest, res: Response): void => {
+apiRouter.delete('/appointments/:id', authMiddleware, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    db.deleteAppointment(req.user!.id, req.params.id);
+    await db.deleteAppointment(req.user!.id, req.params.id);
     res.json({ success: true });
   } catch (err: any) {
     res.status(400).json({ error: err.message });
@@ -285,12 +303,16 @@ apiRouter.delete('/appointments/:id', authMiddleware, (req: AuthRequest, res: Re
 // SYMPTOM JOURNAL ROUTES
 // ==========================================
 
-apiRouter.get('/journal', authMiddleware, (req: AuthRequest, res: Response): void => {
-  const entries = db.getJournalEntries(req.user!.id);
-  res.json(entries);
+apiRouter.get('/journal', authMiddleware, async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const entries = await db.getJournalEntries(req.user!.id);
+    res.json(entries);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Failed to fetch journal entries' });
+  }
 });
 
-apiRouter.post('/journal', authMiddleware, (req: AuthRequest, res: Response): void => {
+apiRouter.post('/journal', authMiddleware, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const { date, symptoms, severity, mood, notes } = req.body;
     if (!date) {
@@ -298,7 +320,7 @@ apiRouter.post('/journal', authMiddleware, (req: AuthRequest, res: Response): vo
       return;
     }
 
-    const entry = db.createJournalEntry(req.user!.id, {
+    const entry = await db.createJournalEntry(req.user!.id, {
       date,
       symptoms: Array.isArray(symptoms) ? symptoms : symptoms ? [symptoms] : [],
       severity: typeof severity === 'number' ? severity : 3,
@@ -312,18 +334,18 @@ apiRouter.post('/journal', authMiddleware, (req: AuthRequest, res: Response): vo
   }
 });
 
-apiRouter.put('/journal/:id', authMiddleware, (req: AuthRequest, res: Response): void => {
+apiRouter.put('/journal/:id', authMiddleware, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const updated = db.updateJournalEntry(req.user!.id, req.params.id, req.body);
+    const updated = await db.updateJournalEntry(req.user!.id, req.params.id, req.body);
     res.json(updated);
   } catch (err: any) {
     res.status(400).json({ error: err.message });
   }
 });
 
-apiRouter.delete('/journal/:id', authMiddleware, (req: AuthRequest, res: Response): void => {
+apiRouter.delete('/journal/:id', authMiddleware, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    db.deleteJournalEntry(req.user!.id, req.params.id);
+    await db.deleteJournalEntry(req.user!.id, req.params.id);
     res.json({ success: true });
   } catch (err: any) {
     res.status(400).json({ error: err.message });
@@ -334,29 +356,33 @@ apiRouter.delete('/journal/:id', authMiddleware, (req: AuthRequest, res: Respons
 // DAILY TASKS ROUTES
 // ==========================================
 
-apiRouter.get('/tasks', authMiddleware, (req: AuthRequest, res: Response): void => {
-  const dateStr = typeof req.query.date === 'string' ? req.query.date : undefined;
-  const tasks = db.getDailyTasks(req.user!.id, dateStr);
-  res.json(tasks);
+apiRouter.get('/tasks', authMiddleware, async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const dateStr = typeof req.query.date === 'string' ? req.query.date : undefined;
+    const tasks = await db.getDailyTasks(req.user!.id, dateStr);
+    res.json(tasks);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Failed to fetch tasks' });
+  }
 });
 
-apiRouter.post('/tasks/toggle/:id', authMiddleware, (req: AuthRequest, res: Response): void => {
+apiRouter.post('/tasks/toggle/:id', authMiddleware, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const updated = db.toggleDailyTask(req.user!.id, req.params.id);
+    const updated = await db.toggleDailyTask(req.user!.id, req.params.id);
     res.json(updated);
   } catch (err: any) {
     res.status(400).json({ error: err.message });
   }
 });
 
-apiRouter.post('/tasks', authMiddleware, (req: AuthRequest, res: Response): void => {
+apiRouter.post('/tasks', authMiddleware, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const { title, category, date } = req.body;
     if (!title) {
       res.status(400).json({ error: 'Title is required' });
       return;
     }
-    const task = db.addDailyTask(req.user!.id, {
+    const task = await db.addDailyTask(req.user!.id, {
       title,
       category: category || 'rest',
       date,
@@ -371,12 +397,16 @@ apiRouter.post('/tasks', authMiddleware, (req: AuthRequest, res: Response): void
 // CAREGIVER ACCESS ROUTES
 // ==========================================
 
-apiRouter.get('/caregivers', authMiddleware, (req: AuthRequest, res: Response): void => {
-  const perms = db.getCaregiverPermissions(req.user!.id);
-  res.json(perms);
+apiRouter.get('/caregivers', authMiddleware, async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const perms = await db.getCaregiverPermissions(req.user!.id);
+    res.json(perms);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
-apiRouter.post('/caregivers/invite', authMiddleware, (req: AuthRequest, res: Response): void => {
+apiRouter.post('/caregivers/invite', authMiddleware, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const { caregiverEmail, caregiverName, permissions } = req.body;
     if (!caregiverEmail) {
@@ -384,7 +414,7 @@ apiRouter.post('/caregivers/invite', authMiddleware, (req: AuthRequest, res: Res
       return;
     }
 
-    const perm = db.addCaregiverPermission(req.user!.id, {
+    const perm = await db.addCaregiverPermission(req.user!.id, {
       caregiverEmail,
       caregiverName: caregiverName || caregiverEmail.split('@')[0],
       permissions: permissions || {
@@ -401,27 +431,35 @@ apiRouter.post('/caregivers/invite', authMiddleware, (req: AuthRequest, res: Res
   }
 });
 
-apiRouter.post('/caregivers/revoke/:id', authMiddleware, (req: AuthRequest, res: Response): void => {
+apiRouter.post('/caregivers/revoke/:id', authMiddleware, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    db.revokeCaregiverPermission(req.user!.id, req.params.id);
+    await db.revokeCaregiverPermission(req.user!.id, req.params.id);
     res.json({ success: true, message: 'Caregiver access revoked.' });
   } catch (err: any) {
     res.status(400).json({ error: err.message });
   }
 });
 
-apiRouter.get('/caregivers/shared-patients', authMiddleware, (req: AuthRequest, res: Response): void => {
-  const shared = db.getSharedPatientsForCaregiver(req.user!.email);
-  res.json(shared);
+apiRouter.get('/caregivers/shared-patients', authMiddleware, async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const shared = await db.getSharedPatientsForCaregiver(req.user!.email);
+    res.json(shared);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // ==========================================
 // AI ASSISTANT ROUTES
 // ==========================================
 
-apiRouter.get('/ai/sessions', authMiddleware, (req: AuthRequest, res: Response): void => {
-  const sessions = db.getChatSessions(req.user!.id);
-  res.json(sessions);
+apiRouter.get('/ai/sessions', authMiddleware, async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const sessions = await db.getChatSessions(req.user!.id);
+    res.json(sessions);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 apiRouter.post('/ai/ask', optionalAuthMiddleware, async (req: AuthRequest, res: Response): Promise<void> => {
@@ -434,14 +472,14 @@ apiRouter.post('/ai/ask', optionalAuthMiddleware, async (req: AuthRequest, res: 
     }
 
     if (req.user) {
-      let session = sessionId ? db.getChatSessionById(req.user.id, sessionId) : undefined;
+      let session = sessionId ? await db.getChatSessionById(req.user.id, sessionId) : undefined;
       if (!session) {
         const shortTitle = prompt.length > 40 ? prompt.substring(0, 37) + '...' : prompt;
-        session = db.createChatSession(req.user.id, shortTitle);
+        session = await db.createChatSession(req.user.id, shortTitle);
       }
 
       // Save user message
-      db.addChatMessage(req.user.id, session.id, {
+      await db.addChatMessage(req.user.id, session.id, {
         role: 'user',
         content: prompt,
       });
@@ -455,7 +493,7 @@ apiRouter.post('/ai/ask', optionalAuthMiddleware, async (req: AuthRequest, res: 
       });
 
       // Save assistant message
-      const botMsg = db.addChatMessage(req.user.id, session.id, {
+      const botMsg = await db.addChatMessage(req.user.id, session.id, {
         role: 'assistant',
         content: response.content,
         sources: response.sources,
@@ -490,9 +528,9 @@ apiRouter.post('/ai/ask', optionalAuthMiddleware, async (req: AuthRequest, res: 
   }
 });
 
-apiRouter.delete('/ai/sessions/:id', authMiddleware, (req: AuthRequest, res: Response): void => {
+apiRouter.delete('/ai/sessions/:id', authMiddleware, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    db.clearChatSession(req.user!.id, req.params.id);
+    await db.clearChatSession(req.user!.id, req.params.id);
     res.json({ success: true });
   } catch (err: any) {
     res.status(400).json({ error: err.message });
@@ -503,16 +541,20 @@ apiRouter.delete('/ai/sessions/:id', authMiddleware, (req: AuthRequest, res: Res
 // DOCTOR VISIT SUMMARY ROUTES
 // ==========================================
 
-apiRouter.get('/summaries', authMiddleware, (req: AuthRequest, res: Response): void => {
-  const summaries = db.getVisitSummaries(req.user!.id);
-  res.json(summaries);
+apiRouter.get('/summaries', authMiddleware, async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const summaries = await db.getVisitSummaries(req.user!.id);
+    res.json(summaries);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 apiRouter.post('/summaries/generate', authMiddleware, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const { appointmentId, includeSymptoms, includeMedications, includeQuestions, customNotes } = req.body;
 
-    const appointments = db.getAppointments(req.user!.id);
+    const appointments = await db.getAppointments(req.user!.id);
     const appointment = appointments.find((a) => a.id === appointmentId) || appointments[0];
 
     if (!appointment) {
@@ -520,7 +562,7 @@ apiRouter.post('/summaries/generate', authMiddleware, async (req: AuthRequest, r
       return;
     }
 
-    const journalEntries = includeSymptoms ? db.getJournalEntries(req.user!.id).slice(0, 5) : [];
+    const journalEntries = includeSymptoms ? (await db.getJournalEntries(req.user!.id)).slice(0, 5) : [];
     const medications = includeMedications
       ? ['Paclitaxel (IV chemotherapy)', 'Ondansetron 8mg (Antiemetic)', 'Dexamethasone', 'Multivitamin support']
       : [];
@@ -557,7 +599,7 @@ apiRouter.post('/summaries/generate', authMiddleware, async (req: AuthRequest, r
   }
 });
 
-apiRouter.post('/summaries', authMiddleware, (req: AuthRequest, res: Response): void => {
+apiRouter.post('/summaries', authMiddleware, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const {
       appointmentId,
@@ -571,7 +613,7 @@ apiRouter.post('/summaries', authMiddleware, (req: AuthRequest, res: Response): 
       patientNotes,
     } = req.body;
 
-    const summary = db.createVisitSummary(req.user!.id, {
+    const summary = await db.createVisitSummary(req.user!.id, {
       appointmentId: appointmentId || '',
       appointmentTitle: appointmentTitle || 'Doctor Visit Summary',
       doctorName: doctorName || 'Oncologist',
@@ -589,9 +631,9 @@ apiRouter.post('/summaries', authMiddleware, (req: AuthRequest, res: Response): 
   }
 });
 
-apiRouter.delete('/summaries/:id', authMiddleware, (req: AuthRequest, res: Response): void => {
+apiRouter.delete('/summaries/:id', authMiddleware, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    db.deleteVisitSummary(req.user!.id, req.params.id);
+    await db.deleteVisitSummary(req.user!.id, req.params.id);
     res.json({ success: true });
   } catch (err: any) {
     res.status(400).json({ error: err.message });
@@ -602,7 +644,7 @@ apiRouter.delete('/summaries/:id', authMiddleware, (req: AuthRequest, res: Respo
 // USER PROFILE & SETTINGS ROUTES
 // ==========================================
 
-apiRouter.put('/user/profile', authMiddleware, (req: AuthRequest, res: Response): void => {
+apiRouter.put('/user/profile', authMiddleware, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const { name, language, accessibility, treatmentPlan } = req.body;
     const updates: Partial<User> = {};
@@ -612,17 +654,17 @@ apiRouter.put('/user/profile', authMiddleware, (req: AuthRequest, res: Response)
     if (accessibility) updates.accessibility = accessibility;
     if (treatmentPlan) updates.treatmentPlan = treatmentPlan;
 
-    const updated = db.updateUser(req.user!.id, updates);
+    const updated = await db.updateUser(req.user!.id, updates);
     res.json(sanitizeUser(updated));
   } catch (err: any) {
     res.status(400).json({ error: err.message });
   }
 });
 
-apiRouter.delete('/user/account', authMiddleware, (req: AuthRequest, res: Response): void => {
+apiRouter.delete('/user/account', authMiddleware, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const userId = req.user!.id;
-    db.deleteUserData(userId);
+    await db.deleteUserData(userId);
     res.clearCookie('cb_session');
     res.json({ success: true, message: 'All personal records and account successfully deleted.' });
   } catch (err: any) {

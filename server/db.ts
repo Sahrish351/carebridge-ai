@@ -1,6 +1,8 @@
 import fs from 'fs';
 import path from 'path';
+import os from 'os';
 import crypto from 'crypto';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
 export interface User {
   id: string;
@@ -142,7 +144,7 @@ interface DatabaseSchema {
 const DB_DIR = path.resolve(process.cwd(), 'data');
 const DB_FILE = path.join(DB_DIR, 'carebridge.json');
 
-function hashPassword(password: string): string {
+export function hashPassword(password: string): string {
   const salt = 'carebridge_cure_salt_2026';
   return crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512').toString('hex');
 }
@@ -384,44 +386,7 @@ function getInitialSeedData(): DatabaseSchema {
         {
           id: 'msg_2',
           role: 'assistant',
-          content: `Chemotherapy can cause side effects because it affects rapidly dividing cells, but they vary from person to person. Here are some common ones and evidence-based ways patients manage them:
-
-1. **Nausea & Vomiting**
-   - Take prescribed anti-nausea medications *before* meals or as scheduled, not just after nausea starts.
-   - Eat small, frequent meals rather than large portions.
-   - Stay hydrated with ginger tea, chilled broth, or diluted electrolyte drinks.
-
-2. **Fatigue**
-   - Rest when needed, but pace yourself with light activity (gentle 10-minute walks help maintain stamina).
-   - Prioritize essential tasks and accept support from loved ones.
-   - Maintain a balanced, protein-rich diet to support cellular recovery.
-
-3. **Hair Loss or Thinning**
-   - Use gentle, sulfate-free hair products and soft bristle brushes.
-   - Protect your scalp with soft cotton scarves, beanies, or sun hats.
-   - Consider discussing cold capping with your oncology team if eligible.
-
-4. **Peripheral Neuropathy (Tingling in fingers/toes)**
-   - Protect hands and feet from extreme temperatures (wear gloves when handling frozen foods).
-   - Avoid tight shoes; report any numbness or balance changes promptly.`,
-          sources: [
-            {
-              title: 'Chemotherapy Side Effects Management',
-              url: 'https://www.mayoclinic.org/tests-procedures/chemotherapy/in-depth/chemotherapy-side-effects/art-20047335',
-              organization: 'Mayo Clinic',
-            },
-            {
-              title: 'Managing Chemotherapy Side Effects',
-              url: 'https://www.cancer.org/treatment/treatments-and-side-effects/treatment-types/chemotherapy/chemotherapy-side-effects.html',
-              organization: 'American Cancer Society',
-            },
-            {
-              title: 'Cancer Support & Wellbeing Resources',
-              url: 'https://www.cancerresearchuk.org/about-cancer/coping/physically/chemotherapy',
-              organization: 'Cancer Research UK',
-            },
-          ],
-          disclaimer: 'This information is for educational purposes only and should not replace professional medical advice. Always consult your oncology team for personalized guidance.',
+          content: `Chemotherapy can cause side effects because it affects rapidly dividing cells, but they vary from person to person. Common ones include nausea, fatigue, and peripheral neuropathy. Always report persistent symptoms to your care team.`,
           timestamp: '2026-10-22T10:05:00.000Z',
         },
       ],
@@ -466,39 +431,115 @@ function getInitialSeedData(): DatabaseSchema {
 
 class Database {
   private data: DatabaseSchema;
+  private supabase: SupabaseClient | null = null;
+  private isSupabaseEnabled: boolean = false;
 
   constructor() {
     this.data = this.loadData();
+    this.initSupabase();
+  }
+
+  private initSupabase(): void {
+    const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+    const supabaseKey =
+      process.env.SUPABASE_SERVICE_ROLE_KEY ||
+      process.env.SUPABASE_ANON_KEY ||
+      process.env.VITE_SUPABASE_ANON_KEY;
+
+    if (supabaseUrl && supabaseKey && supabaseUrl !== 'MY_SUPABASE_URL') {
+      try {
+        this.supabase = createClient(supabaseUrl, supabaseKey, {
+          auth: { persistSession: false },
+        });
+        this.isSupabaseEnabled = true;
+        console.log('[CareBridge DB] Supabase client initialized:', supabaseUrl);
+      } catch (err) {
+        console.error('[CareBridge DB] Failed to initialize Supabase client:', err);
+        this.supabase = null;
+        this.isSupabaseEnabled = false;
+      }
+    } else {
+      console.log('[CareBridge DB] Running with local transactional JSON storage engine.');
+    }
+  }
+
+  public isUsingSupabase(): boolean {
+    return this.isSupabaseEnabled && this.supabase !== null;
+  }
+
+  public async checkConnection(): Promise<{
+    connected: boolean;
+    storage: 'supabase' | 'local-json';
+    message: string;
+  }> {
+    if (!this.supabase) {
+      return {
+        connected: true,
+        storage: 'local-json',
+        message: 'Operating with local JSON engine. Add SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY to enable cloud PostgreSQL.',
+      };
+    }
+
+    try {
+      const { data, error } = await this.supabase.from('users').select('id').limit(1);
+      if (error) {
+        return {
+          connected: false,
+          storage: 'supabase',
+          message: `Supabase query error: ${error.message}. Please run the migration script in supabase/schema.sql.`,
+        };
+      }
+      return {
+        connected: true,
+        storage: 'supabase',
+        message: 'Connected to Supabase PostgreSQL successfully.',
+      };
+    } catch (err: any) {
+      return {
+        connected: false,
+        storage: 'supabase',
+        message: `Supabase connection error: ${err.message}`,
+      };
+    }
   }
 
   private loadData(): DatabaseSchema {
     try {
-      if (!fs.existsSync(DB_DIR)) {
-        fs.mkdirSync(DB_DIR, { recursive: true });
+      // 1. Check /tmp if running in read-only environment like Vercel
+      const tmpFile = path.resolve(os.tmpdir(), 'carebridge-data', 'carebridge.json');
+      if (fs.existsSync(tmpFile)) {
+        const content = fs.readFileSync(tmpFile, 'utf-8');
+        const parsed = JSON.parse(content);
+        return this.sanitizeLoadedData(parsed);
       }
 
+      // 2. Check local data directory
       if (fs.existsSync(DB_FILE)) {
         const content = fs.readFileSync(DB_FILE, 'utf-8');
         const parsed = JSON.parse(content);
-        return {
-          users: parsed.users || [],
-          sessions: parsed.sessions || [],
-          appointments: parsed.appointments || [],
-          journalEntries: parsed.journalEntries || [],
-          dailyTasks: parsed.dailyTasks || [],
-          caregiverPermissions: parsed.caregiverPermissions || [],
-          chatSessions: parsed.chatSessions || [],
-          visitSummaries: parsed.visitSummaries || [],
-          passwordResetTokens: parsed.passwordResetTokens || [],
-        };
+        return this.sanitizeLoadedData(parsed);
       }
     } catch (err) {
-      console.error('Error reading database file, initializing seed:', err);
+      console.warn('Notice: using initial seed data:', err);
     }
 
     const seed = getInitialSeedData();
     this.saveDataDirect(seed);
     return seed;
+  }
+
+  private sanitizeLoadedData(parsed: any): DatabaseSchema {
+    return {
+      users: parsed.users || [],
+      sessions: parsed.sessions || [],
+      appointments: parsed.appointments || [],
+      journalEntries: parsed.journalEntries || [],
+      dailyTasks: parsed.dailyTasks || [],
+      caregiverPermissions: parsed.caregiverPermissions || [],
+      chatSessions: parsed.chatSessions || [],
+      visitSummaries: parsed.visitSummaries || [],
+      passwordResetTokens: parsed.passwordResetTokens || [],
+    };
   }
 
   private saveDataDirect(data: DatabaseSchema): void {
@@ -508,7 +549,16 @@ class Database {
       }
       fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2), 'utf-8');
     } catch (err) {
-      console.error('Failed to write database file:', err);
+      // If process.cwd() is read-only (e.g. Vercel serverless), write to /tmp
+      try {
+        const tmpDir = path.resolve(os.tmpdir(), 'carebridge-data');
+        if (!fs.existsSync(tmpDir)) {
+          fs.mkdirSync(tmpDir, { recursive: true });
+        }
+        fs.writeFileSync(path.join(tmpDir, 'carebridge.json'), JSON.stringify(data, null, 2), 'utf-8');
+      } catch (tmpErr) {
+        // Retained in-memory in this.data
+      }
     }
   }
 
@@ -516,22 +566,100 @@ class Database {
     this.saveDataDirect(this.data);
   }
 
-  // --- Users & Auth ---
-  public getUserByEmail(email: string): User | undefined {
-    return this.data.users.find((u) => u.email.toLowerCase() === email.toLowerCase());
+  // ============================================================================
+  // USERS & AUTH
+  // ============================================================================
+  public async getUserByEmail(email: string): Promise<User | undefined> {
+    const normalized = email.trim().toLowerCase();
+
+    if (this.supabase) {
+      try {
+        const { data, error } = await this.supabase
+          .from('users')
+          .select('*')
+          .ilike('email', normalized)
+          .maybeSingle();
+
+        if (error) throw error;
+        if (data) {
+          return {
+            id: data.id,
+            email: data.email,
+            passwordHash: data.password_hash,
+            name: data.name,
+            role: data.role,
+            language: data.language || 'en',
+            accessibility: data.accessibility || { highContrast: false, fontSize: 'normal', reducedMotion: false },
+            treatmentPlan: data.treatment_plan || {
+              regimen: '',
+              currentCycle: 0,
+              totalCycles: 0,
+              startDate: '',
+              nextDoseDate: '',
+              oncologist: '',
+              clinic: '',
+              status: 'completed',
+            },
+            createdAt: data.created_at,
+          };
+        }
+        return undefined;
+      } catch (err) {
+        console.warn('[Supabase] getUserByEmail failed, falling back to local memory:', err);
+      }
+    }
+
+    return this.data.users.find((u) => u.email.toLowerCase() === normalized);
   }
 
-  public getUserById(id: string): User | undefined {
+  public async getUserById(id: string): Promise<User | undefined> {
+    if (this.supabase) {
+      try {
+        const { data, error } = await this.supabase
+          .from('users')
+          .select('*')
+          .eq('id', id)
+          .maybeSingle();
+
+        if (error) throw error;
+        if (data) {
+          return {
+            id: data.id,
+            email: data.email,
+            passwordHash: data.password_hash,
+            name: data.name,
+            role: data.role,
+            language: data.language || 'en',
+            accessibility: data.accessibility || { highContrast: false, fontSize: 'normal', reducedMotion: false },
+            treatmentPlan: data.treatment_plan || {
+              regimen: '',
+              currentCycle: 0,
+              totalCycles: 0,
+              startDate: '',
+              nextDoseDate: '',
+              oncologist: '',
+              clinic: '',
+              status: 'completed',
+            },
+            createdAt: data.created_at,
+          };
+        }
+        return undefined;
+      } catch (err) {
+        console.warn('[Supabase] getUserById failed, falling back to local memory:', err);
+      }
+    }
+
     return this.data.users.find((u) => u.id === id);
   }
 
-  public createUser(userData: {
+  public async createUser(userData: {
     email: string;
     password: string;
     name: string;
     role: 'patient' | 'caregiver' | 'doctor';
-  }): User {
-    const existing = this.getUserByEmail(userData.email);
+  }): Promise<User> {
+    const existing = await this.getUserByEmail(userData.email);
     if (existing) {
       throw new Error('An account with this email already exists.');
     }
@@ -561,9 +689,51 @@ class Database {
       createdAt: new Date().toISOString(),
     };
 
-    this.data.users.push(newUser);
+    if (this.supabase) {
+      try {
+        const { error } = await this.supabase.from('users').insert({
+          id: newUser.id,
+          email: newUser.email,
+          password_hash: newUser.passwordHash,
+          name: newUser.name,
+          role: newUser.role,
+          language: newUser.language,
+          accessibility: newUser.accessibility,
+          treatment_plan: newUser.treatmentPlan,
+          created_at: newUser.createdAt,
+        });
 
-    // If patient, seed a couple of starter tasks
+        if (error) throw error;
+
+        // If patient, seed starter tasks in Supabase
+        if (newUser.role === 'patient') {
+          const today = new Date().toISOString().split('T')[0];
+          await this.supabase.from('daily_tasks').insert([
+            {
+              id: `tsk_${Date.now()}_1`,
+              user_id: newUser.id,
+              date: today,
+              title: 'Drink 2 liters of water & stay hydrated',
+              category: 'hydration',
+              completed: false,
+            },
+            {
+              id: `tsk_${Date.now()}_2`,
+              user_id: newUser.id,
+              date: today,
+              title: '15-minute gentle walk or resting meditation',
+              category: 'exercise',
+              completed: false,
+            },
+          ]);
+        }
+      } catch (err) {
+        console.warn('[Supabase] createUser insert failed, writing to local storage:', err);
+      }
+    }
+
+    // Always maintain in local store as well
+    this.data.users.push(newUser);
     if (newUser.role === 'patient') {
       const today = new Date().toISOString().split('T')[0];
       this.data.dailyTasks.push(
@@ -585,7 +755,6 @@ class Database {
         }
       );
     }
-
     this.save();
     return newUser;
   }
@@ -595,35 +764,96 @@ class Database {
     return user.passwordHash === hash;
   }
 
-  public updateUser(id: string, updates: Partial<User>): User {
-    const userIndex = this.data.users.findIndex((u) => u.id === id);
-    if (userIndex === -1) {
-      throw new Error('User not found');
+  public async updateUser(id: string, updates: Partial<User>): Promise<User> {
+    if (this.supabase) {
+      try {
+        const dbUpdates: any = {};
+        if (updates.name !== undefined) dbUpdates.name = updates.name;
+        if (updates.language !== undefined) dbUpdates.language = updates.language;
+        if (updates.accessibility !== undefined) dbUpdates.accessibility = updates.accessibility;
+        if (updates.treatmentPlan !== undefined) dbUpdates.treatment_plan = updates.treatmentPlan;
+        if (updates.passwordHash !== undefined) dbUpdates.password_hash = updates.passwordHash;
+
+        const { error } = await this.supabase.from('users').update(dbUpdates).eq('id', id);
+        if (error) throw error;
+      } catch (err) {
+        console.warn('[Supabase] updateUser failed, updating locally:', err);
+      }
     }
-    this.data.users[userIndex] = {
-      ...this.data.users[userIndex],
-      ...updates,
-    };
-    this.save();
-    return this.data.users[userIndex];
+
+    const userIndex = this.data.users.findIndex((u) => u.id === id);
+    if (userIndex !== -1) {
+      this.data.users[userIndex] = {
+        ...this.data.users[userIndex],
+        ...updates,
+      };
+      this.save();
+      return this.data.users[userIndex];
+    }
+
+    const user = await this.getUserById(id);
+    if (!user) throw new Error('User not found');
+    return { ...user, ...updates };
   }
 
-  // --- Sessions ---
-  public createSession(userId: string): Session {
-    // 30 days session
+  // ============================================================================
+  // SESSIONS
+  // ============================================================================
+  public async createSession(userId: string): Promise<Session> {
     const token = crypto.randomBytes(32).toString('hex');
     const session: Session = {
       token,
       userId,
       createdAt: Date.now(),
-      expiresAt: Date.now() + 30 * 24 * 60 * 60 * 1000,
+      expiresAt: Date.now() + 30 * 24 * 60 * 60 * 1000, // 30 days
     };
+
+    if (this.supabase) {
+      try {
+        const { error } = await this.supabase.from('sessions').insert({
+          token: session.token,
+          user_id: session.userId,
+          created_at: session.createdAt,
+          expires_at: session.expiresAt,
+        });
+        if (error) throw error;
+      } catch (err) {
+        console.warn('[Supabase] createSession failed, falling back to local memory:', err);
+      }
+    }
+
     this.data.sessions.push(session);
     this.save();
     return session;
   }
 
-  public getSession(token: string): Session | undefined {
+  public async getSession(token: string): Promise<Session | undefined> {
+    if (this.supabase) {
+      try {
+        const { data, error } = await this.supabase
+          .from('sessions')
+          .select('*')
+          .eq('token', token)
+          .maybeSingle();
+
+        if (error) throw error;
+        if (data) {
+          if (Date.now() > Number(data.expires_at)) {
+            await this.deleteSession(token);
+            return undefined;
+          }
+          return {
+            token: data.token,
+            userId: data.user_id,
+            createdAt: Number(data.created_at),
+            expiresAt: Number(data.expires_at),
+          };
+        }
+      } catch (err) {
+        console.warn('[Supabase] getSession failed, checking local memory:', err);
+      }
+    }
+
     const session = this.data.sessions.find((s) => s.token === token);
     if (!session) return undefined;
     if (Date.now() > session.expiresAt) {
@@ -633,85 +863,327 @@ class Database {
     return session;
   }
 
-  public deleteSession(token: string): void {
+  public async deleteSession(token: string): Promise<void> {
+    if (this.supabase) {
+      try {
+        await this.supabase.from('sessions').delete().eq('token', token);
+      } catch (err) {
+        console.warn('[Supabase] deleteSession failed:', err);
+      }
+    }
     this.data.sessions = this.data.sessions.filter((s) => s.token !== token);
     this.save();
   }
 
-  // --- Appointments ---
-  public getAppointments(userId: string): Appointment[] {
+  // ============================================================================
+  // APPOINTMENTS
+  // ============================================================================
+  public async getAppointments(userId: string): Promise<Appointment[]> {
+    if (this.supabase) {
+      try {
+        const { data, error } = await this.supabase
+          .from('appointments')
+          .select('*')
+          .eq('user_id', userId);
+
+        if (error) throw error;
+        if (data && data.length > 0) {
+          return data
+            .map((a: any) => ({
+              id: a.id,
+              userId: a.user_id,
+              title: a.title,
+              doctor: a.doctor,
+              specialty: a.specialty || '',
+              date: a.date,
+              time: a.time,
+              location: a.location || '',
+              type: a.type,
+              notes: a.notes || '',
+              reminder: a.reminder ?? true,
+              createdAt: a.created_at,
+            }))
+            .sort((a, b) => new Date(`${a.date} ${a.time}`).getTime() - new Date(`${b.date} ${b.time}`).getTime());
+        }
+      } catch (err) {
+        console.warn('[Supabase] getAppointments failed, falling back to local memory:', err);
+      }
+    }
+
     return this.data.appointments
       .filter((a) => a.userId === userId)
       .sort((a, b) => new Date(`${a.date} ${a.time}`).getTime() - new Date(`${b.date} ${b.time}`).getTime());
   }
 
-  public createAppointment(userId: string, data: Omit<Appointment, 'id' | 'userId' | 'createdAt'>): Appointment {
+  public async createAppointment(
+    userId: string,
+    data: Omit<Appointment, 'id' | 'userId' | 'createdAt'>
+  ): Promise<Appointment> {
     const apt: Appointment = {
       id: `apt_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
       userId,
       ...data,
       createdAt: new Date().toISOString(),
     };
+
+    if (this.supabase) {
+      try {
+        const { error } = await this.supabase.from('appointments').insert({
+          id: apt.id,
+          user_id: apt.userId,
+          title: apt.title,
+          doctor: apt.doctor,
+          specialty: apt.specialty,
+          date: apt.date,
+          time: apt.time,
+          location: apt.location,
+          type: apt.type,
+          notes: apt.notes,
+          reminder: apt.reminder,
+          created_at: apt.createdAt,
+        });
+        if (error) throw error;
+      } catch (err) {
+        console.warn('[Supabase] createAppointment failed, storing locally:', err);
+      }
+    }
+
     this.data.appointments.push(apt);
     this.save();
     return apt;
   }
 
-  public updateAppointment(userId: string, aptId: string, data: Partial<Appointment>): Appointment {
+  public async updateAppointment(
+    userId: string,
+    aptId: string,
+    data: Partial<Appointment>
+  ): Promise<Appointment> {
+    if (this.supabase) {
+      try {
+        const dbUpdates: any = {};
+        if (data.title !== undefined) dbUpdates.title = data.title;
+        if (data.doctor !== undefined) dbUpdates.doctor = data.doctor;
+        if (data.specialty !== undefined) dbUpdates.specialty = data.specialty;
+        if (data.date !== undefined) dbUpdates.date = data.date;
+        if (data.time !== undefined) dbUpdates.time = data.time;
+        if (data.location !== undefined) dbUpdates.location = data.location;
+        if (data.type !== undefined) dbUpdates.type = data.type;
+        if (data.notes !== undefined) dbUpdates.notes = data.notes;
+        if (data.reminder !== undefined) dbUpdates.reminder = data.reminder;
+
+        await this.supabase.from('appointments').update(dbUpdates).eq('id', aptId).eq('user_id', userId);
+      } catch (err) {
+        console.warn('[Supabase] updateAppointment failed, updating locally:', err);
+      }
+    }
+
     const index = this.data.appointments.findIndex((a) => a.id === aptId && a.userId === userId);
-    if (index === -1) throw new Error('Appointment not found or unauthorized');
+    if (index === -1) {
+      const apts = await this.getAppointments(userId);
+      const found = apts.find((a) => a.id === aptId);
+      if (!found) throw new Error('Appointment not found or unauthorized');
+      return { ...found, ...data };
+    }
+
     this.data.appointments[index] = { ...this.data.appointments[index], ...data };
     this.save();
     return this.data.appointments[index];
   }
 
-  public deleteAppointment(userId: string, aptId: string): void {
+  public async deleteAppointment(userId: string, aptId: string): Promise<void> {
+    if (this.supabase) {
+      try {
+        await this.supabase.from('appointments').delete().eq('id', aptId).eq('user_id', userId);
+      } catch (err) {
+        console.warn('[Supabase] deleteAppointment failed:', err);
+      }
+    }
+
     const index = this.data.appointments.findIndex((a) => a.id === aptId && a.userId === userId);
-    if (index === -1) throw new Error('Appointment not found or unauthorized');
-    this.data.appointments.splice(index, 1);
-    this.save();
+    if (index !== -1) {
+      this.data.appointments.splice(index, 1);
+      this.save();
+    }
   }
 
-  // --- Symptom Journal ---
-  public getJournalEntries(userId: string): JournalEntry[] {
+  // ============================================================================
+  // SYMPTOM JOURNAL
+  // ============================================================================
+  public async getJournalEntries(userId: string): Promise<JournalEntry[]> {
+    if (this.supabase) {
+      try {
+        const { data, error } = await this.supabase
+          .from('journal_entries')
+          .select('*')
+          .eq('user_id', userId);
+
+        if (error) throw error;
+        if (data && data.length > 0) {
+          return data
+            .map((j: any) => ({
+              id: j.id,
+              userId: j.user_id,
+              date: j.date,
+              symptoms: Array.isArray(j.symptoms) ? j.symptoms : [],
+              severity: j.severity,
+              mood: j.mood,
+              notes: j.notes || '',
+              createdAt: j.created_at,
+            }))
+            .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        }
+      } catch (err) {
+        console.warn('[Supabase] getJournalEntries failed, falling back to local memory:', err);
+      }
+    }
+
     return this.data.journalEntries
       .filter((j) => j.userId === userId)
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   }
 
-  public createJournalEntry(userId: string, data: Omit<JournalEntry, 'id' | 'userId' | 'createdAt'>): JournalEntry {
+  public async createJournalEntry(
+    userId: string,
+    data: Omit<JournalEntry, 'id' | 'userId' | 'createdAt'>
+  ): Promise<JournalEntry> {
     const entry: JournalEntry = {
       id: `jnl_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
       userId,
       ...data,
       createdAt: new Date().toISOString(),
     };
+
+    if (this.supabase) {
+      try {
+        const { error } = await this.supabase.from('journal_entries').insert({
+          id: entry.id,
+          user_id: entry.userId,
+          date: entry.date,
+          symptoms: entry.symptoms,
+          severity: entry.severity,
+          mood: entry.mood,
+          notes: entry.notes,
+          created_at: entry.createdAt,
+        });
+        if (error) throw error;
+      } catch (err) {
+        console.warn('[Supabase] createJournalEntry failed, storing locally:', err);
+      }
+    }
+
     this.data.journalEntries.push(entry);
     this.save();
     return entry;
   }
 
-  public updateJournalEntry(userId: string, entryId: string, data: Partial<JournalEntry>): JournalEntry {
+  public async updateJournalEntry(
+    userId: string,
+    entryId: string,
+    data: Partial<JournalEntry>
+  ): Promise<JournalEntry> {
+    if (this.supabase) {
+      try {
+        const dbUpdates: any = {};
+        if (data.date !== undefined) dbUpdates.date = data.date;
+        if (data.symptoms !== undefined) dbUpdates.symptoms = data.symptoms;
+        if (data.severity !== undefined) dbUpdates.severity = data.severity;
+        if (data.mood !== undefined) dbUpdates.mood = data.mood;
+        if (data.notes !== undefined) dbUpdates.notes = data.notes;
+
+        await this.supabase.from('journal_entries').update(dbUpdates).eq('id', entryId).eq('user_id', userId);
+      } catch (err) {
+        console.warn('[Supabase] updateJournalEntry failed:', err);
+      }
+    }
+
     const index = this.data.journalEntries.findIndex((j) => j.id === entryId && j.userId === userId);
-    if (index === -1) throw new Error('Journal entry not found or unauthorized');
+    if (index === -1) {
+      const entries = await this.getJournalEntries(userId);
+      const found = entries.find((j) => j.id === entryId);
+      if (!found) throw new Error('Journal entry not found or unauthorized');
+      return { ...found, ...data };
+    }
+
     this.data.journalEntries[index] = { ...this.data.journalEntries[index], ...data };
     this.save();
     return this.data.journalEntries[index];
   }
 
-  public deleteJournalEntry(userId: string, entryId: string): void {
+  public async deleteJournalEntry(userId: string, entryId: string): Promise<void> {
+    if (this.supabase) {
+      try {
+        await this.supabase.from('journal_entries').delete().eq('id', entryId).eq('user_id', userId);
+      } catch (err) {
+        console.warn('[Supabase] deleteJournalEntry failed:', err);
+      }
+    }
+
     const index = this.data.journalEntries.findIndex((j) => j.id === entryId && j.userId === userId);
-    if (index === -1) throw new Error('Journal entry not found or unauthorized');
-    this.data.journalEntries.splice(index, 1);
-    this.save();
+    if (index !== -1) {
+      this.data.journalEntries.splice(index, 1);
+      this.save();
+    }
   }
 
-  // --- Daily Tasks ---
-  public getDailyTasks(userId: string, dateStr?: string): DailyTask[] {
+  // ============================================================================
+  // DAILY TASKS
+  // ============================================================================
+  public async getDailyTasks(userId: string, dateStr?: string): Promise<DailyTask[]> {
     const date = dateStr || new Date().toISOString().split('T')[0];
+
+    if (this.supabase) {
+      try {
+        const { data, error } = await this.supabase
+          .from('daily_tasks')
+          .select('*')
+          .eq('user_id', userId)
+          .eq('date', date);
+
+        if (error) throw error;
+        if (data && data.length > 0) {
+          return data.map((t: any) => ({
+            id: t.id,
+            userId: t.user_id,
+            date: t.date,
+            title: t.title,
+            category: t.category,
+            completed: t.completed,
+          }));
+        } else {
+          // Seed starter daily tasks for this date
+          const defaults: Array<Omit<DailyTask, 'id' | 'userId' | 'date'>> = [
+            { title: 'Take prescribed medication', category: 'medication', completed: false },
+            { title: 'Drink water (Hydration goal: 2 liters)', category: 'hydration', completed: false },
+            { title: 'Light exercise (Gentle stretching or 10-min walk)', category: 'exercise', completed: false },
+            { title: 'Rest & relax (Mindful breathing or nap)', category: 'rest', completed: false },
+          ];
+
+          const newTasks = defaults.map((d, idx) => ({
+            id: `tsk_${Date.now()}_${idx}`,
+            user_id: userId,
+            date,
+            title: d.title,
+            category: d.category,
+            completed: d.completed,
+          }));
+
+          await this.supabase.from('daily_tasks').insert(newTasks);
+          return newTasks.map((t) => ({
+            id: t.id,
+            userId: t.user_id,
+            date: t.date,
+            title: t.title,
+            category: t.category as any,
+            completed: t.completed,
+          }));
+        }
+      } catch (err) {
+        console.warn('[Supabase] getDailyTasks failed, falling back to local memory:', err);
+      }
+    }
+
     let tasks = this.data.dailyTasks.filter((t) => t.userId === userId && t.date === date);
 
-    // If no tasks for today yet, generate default self-care checklist
     if (tasks.length === 0) {
       const defaults: Array<Omit<DailyTask, 'id' | 'userId' | 'date'>> = [
         { title: 'Take prescribed medication', category: 'medication', completed: false },
@@ -736,15 +1208,50 @@ class Database {
     return tasks;
   }
 
-  public toggleDailyTask(userId: string, taskId: string): DailyTask {
-    const task = this.data.dailyTasks.find((t) => t.id === taskId && t.userId === userId);
+  public async toggleDailyTask(userId: string, taskId: string): Promise<DailyTask> {
+    let task = this.data.dailyTasks.find((t) => t.id === taskId && t.userId === userId);
+
+    if (this.supabase) {
+      try {
+        const { data } = await this.supabase
+          .from('daily_tasks')
+          .select('*')
+          .eq('id', taskId)
+          .eq('user_id', userId)
+          .maybeSingle();
+
+        if (data) {
+          const newCompleted = !data.completed;
+          await this.supabase
+            .from('daily_tasks')
+            .update({ completed: newCompleted })
+            .eq('id', taskId)
+            .eq('user_id', userId);
+
+          return {
+            id: data.id,
+            userId: data.user_id,
+            date: data.date,
+            title: data.title,
+            category: data.category,
+            completed: newCompleted,
+          };
+        }
+      } catch (err) {
+        console.warn('[Supabase] toggleDailyTask failed:', err);
+      }
+    }
+
     if (!task) throw new Error('Task not found');
     task.completed = !task.completed;
     this.save();
     return task;
   }
 
-  public addDailyTask(userId: string, data: { title: string; category: DailyTask['category']; date?: string }): DailyTask {
+  public async addDailyTask(
+    userId: string,
+    data: { title: string; category: DailyTask['category']; date?: string }
+  ): Promise<DailyTask> {
     const date = data.date || new Date().toISOString().split('T')[0];
     const task: DailyTask = {
       id: `tsk_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
@@ -754,29 +1261,105 @@ class Database {
       category: data.category,
       completed: false,
     };
+
+    if (this.supabase) {
+      try {
+        await this.supabase.from('daily_tasks').insert({
+          id: task.id,
+          user_id: task.userId,
+          date: task.date,
+          title: task.title,
+          category: task.category,
+          completed: task.completed,
+        });
+      } catch (err) {
+        console.warn('[Supabase] addDailyTask failed:', err);
+      }
+    }
+
     this.data.dailyTasks.push(task);
     this.save();
     return task;
   }
 
-  // --- Caregiver Permissions ---
-  public getCaregiverPermissions(patientUserId: string): CaregiverPermission[] {
+  // ============================================================================
+  // CAREGIVER PERMISSIONS
+  // ============================================================================
+  public async getCaregiverPermissions(patientUserId: string): Promise<CaregiverPermission[]> {
+    if (this.supabase) {
+      try {
+        const { data, error } = await this.supabase
+          .from('caregiver_permissions')
+          .select('*')
+          .eq('patient_user_id', patientUserId);
+
+        if (error) throw error;
+        if (data && data.length > 0) {
+          return data.map((p: any) => ({
+            id: p.id,
+            patientUserId: p.patient_user_id,
+            caregiverEmail: p.caregiver_email,
+            caregiverName: p.caregiver_name,
+            status: p.status,
+            permissions: p.permissions,
+            createdAt: p.created_at,
+          }));
+        }
+      } catch (err) {
+        console.warn('[Supabase] getCaregiverPermissions failed:', err);
+      }
+    }
+
     return this.data.caregiverPermissions.filter((p) => p.patientUserId === patientUserId);
   }
 
-  public getSharedPatientsForCaregiver(caregiverEmail: string): Array<{
-    patient: Omit<User, 'passwordHash'>;
-    permission: CaregiverPermission;
-  }> {
+  public async getSharedPatientsForCaregiver(
+    caregiverEmail: string
+  ): Promise<Array<{ patient: Omit<User, 'passwordHash'>; permission: CaregiverPermission }>> {
+    const normalizedEmail = caregiverEmail.toLowerCase();
+    const results: Array<{ patient: Omit<User, 'passwordHash'>; permission: CaregiverPermission }> = [];
+
+    if (this.supabase) {
+      try {
+        const { data, error } = await this.supabase
+          .from('caregiver_permissions')
+          .select('*')
+          .ilike('caregiver_email', normalizedEmail)
+          .eq('status', 'active');
+
+        if (!error && data && data.length > 0) {
+          for (const p of data) {
+            const patient = await this.getUserById(p.patient_user_id);
+            if (patient) {
+              const { passwordHash, ...safePatient } = patient;
+              results.push({
+                patient: safePatient,
+                permission: {
+                  id: p.id,
+                  patientUserId: p.patient_user_id,
+                  caregiverEmail: p.caregiver_email,
+                  caregiverName: p.caregiver_name,
+                  status: p.status,
+                  permissions: p.permissions,
+                  createdAt: p.created_at,
+                },
+              });
+            }
+          }
+          if (results.length > 0) return results;
+        }
+      } catch (err) {
+        console.warn('[Supabase] getSharedPatientsForCaregiver failed:', err);
+      }
+    }
+
     const perms = this.data.caregiverPermissions.filter(
-      (p) => p.caregiverEmail.toLowerCase() === caregiverEmail.toLowerCase() && p.status === 'active'
+      (p) => p.caregiverEmail.toLowerCase() === normalizedEmail && p.status === 'active'
     );
 
-    const results: Array<{ patient: Omit<User, 'passwordHash'>; permission: CaregiverPermission }> = [];
     for (const p of perms) {
-      const patient = this.getUserById(p.patientUserId);
+      const patient = await this.getUserById(p.patientUserId);
       if (patient) {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { passwordHash, ...safePatient } = patient;
         results.push({ patient: safePatient, permission: p });
       }
@@ -784,12 +1367,75 @@ class Database {
     return results;
   }
 
-  public addCaregiverPermission(
+  public async addCaregiverPermission(
     patientUserId: string,
     data: { caregiverEmail: string; caregiverName: string; permissions: CaregiverPermission['permissions'] }
-  ): CaregiverPermission {
+  ): Promise<CaregiverPermission> {
+    const normalizedEmail = data.caregiverEmail.toLowerCase();
+
+    if (this.supabase) {
+      try {
+        const existing = await this.supabase
+          .from('caregiver_permissions')
+          .select('*')
+          .eq('patient_user_id', patientUserId)
+          .ilike('caregiver_email', normalizedEmail)
+          .maybeSingle();
+
+        if (existing.data) {
+          const { data: updated, error } = await this.supabase
+            .from('caregiver_permissions')
+            .update({ status: 'active', permissions: data.permissions })
+            .eq('id', existing.data.id)
+            .select()
+            .single();
+
+          if (!error && updated) {
+            return {
+              id: updated.id,
+              patientUserId: updated.patient_user_id,
+              caregiverEmail: updated.caregiver_email,
+              caregiverName: updated.caregiver_name,
+              status: updated.status,
+              permissions: updated.permissions,
+              createdAt: updated.created_at,
+            };
+          }
+        } else {
+          const newId = `perm_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
+          const { data: inserted, error } = await this.supabase
+            .from('caregiver_permissions')
+            .insert({
+              id: newId,
+              patient_user_id: patientUserId,
+              caregiver_email: normalizedEmail,
+              caregiver_name: data.caregiverName,
+              status: 'active',
+              permissions: data.permissions,
+              created_at: new Date().toISOString(),
+            })
+            .select()
+            .single();
+
+          if (!error && inserted) {
+            return {
+              id: inserted.id,
+              patientUserId: inserted.patient_user_id,
+              caregiverEmail: inserted.caregiver_email,
+              caregiverName: inserted.caregiver_name,
+              status: inserted.status,
+              permissions: inserted.permissions,
+              createdAt: inserted.created_at,
+            };
+          }
+        }
+      } catch (err) {
+        console.warn('[Supabase] addCaregiverPermission failed:', err);
+      }
+    }
+
     const existing = this.data.caregiverPermissions.find(
-      (p) => p.patientUserId === patientUserId && p.caregiverEmail.toLowerCase() === data.caregiverEmail.toLowerCase()
+      (p) => p.patientUserId === patientUserId && p.caregiverEmail.toLowerCase() === normalizedEmail
     );
 
     if (existing) {
@@ -802,7 +1448,7 @@ class Database {
     const perm: CaregiverPermission = {
       id: `perm_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
       patientUserId,
-      caregiverEmail: data.caregiverEmail.toLowerCase(),
+      caregiverEmail: normalizedEmail,
       caregiverName: data.caregiverName,
       status: 'active',
       permissions: data.permissions,
@@ -813,25 +1459,91 @@ class Database {
     return perm;
   }
 
-  public revokeCaregiverPermission(patientUserId: string, permId: string): void {
+  public async revokeCaregiverPermission(patientUserId: string, permId: string): Promise<void> {
+    if (this.supabase) {
+      try {
+        await this.supabase
+          .from('caregiver_permissions')
+          .update({ status: 'revoked' })
+          .eq('id', permId)
+          .eq('patient_user_id', patientUserId);
+      } catch (err) {
+        console.warn('[Supabase] revokeCaregiverPermission failed:', err);
+      }
+    }
+
     const perm = this.data.caregiverPermissions.find((p) => p.id === permId && p.patientUserId === patientUserId);
     if (!perm) throw new Error('Permission not found');
     perm.status = 'revoked';
     this.save();
   }
 
-  // --- Chat Sessions ---
-  public getChatSessions(userId: string): ChatSession[] {
+  // ============================================================================
+  // CHAT SESSIONS
+  // ============================================================================
+  public async getChatSessions(userId: string): Promise<ChatSession[]> {
+    if (this.supabase) {
+      try {
+        const { data, error } = await this.supabase
+          .from('chat_sessions')
+          .select('*')
+          .eq('user_id', userId);
+
+        if (!error && data && data.length > 0) {
+          return data
+            .map((c: any) => ({
+              id: c.id,
+              userId: c.user_id,
+              title: c.title,
+              messages: Array.isArray(c.messages) ? c.messages : [],
+              createdAt: c.created_at,
+              updatedAt: c.updated_at,
+            }))
+            .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+        }
+      } catch (err) {
+        console.warn('[Supabase] getChatSessions failed:', err);
+      }
+    }
+
     return this.data.chatSessions
       .filter((c) => c.userId === userId)
       .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
   }
 
-  public getChatSessionById(userId: string, sessionId: string): ChatSession | undefined {
+  public async getChatSessionById(userId: string, sessionId: string): Promise<ChatSession | undefined> {
+    if (this.supabase) {
+      try {
+        const { data, error } = await this.supabase
+          .from('chat_sessions')
+          .select('*')
+          .eq('id', sessionId)
+          .eq('user_id', userId)
+          .maybeSingle();
+
+        if (!error && data) {
+          return {
+            id: data.id,
+            userId: data.user_id,
+            title: data.title,
+            messages: Array.isArray(data.messages) ? data.messages : [],
+            createdAt: data.created_at,
+            updatedAt: data.updated_at,
+          };
+        }
+      } catch (err) {
+        console.warn('[Supabase] getChatSessionById failed:', err);
+      }
+    }
+
     return this.data.chatSessions.find((c) => c.id === sessionId && c.userId === userId);
   }
 
-  public createChatSession(userId: string, title: string, initialMessage?: ChatMessage): ChatSession {
+  public async createChatSession(
+    userId: string,
+    title: string,
+    initialMessage?: ChatMessage
+  ): Promise<ChatSession> {
     const session: ChatSession = {
       id: `chat_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
       userId,
@@ -840,13 +1552,33 @@ class Database {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
+
+    if (this.supabase) {
+      try {
+        await this.supabase.from('chat_sessions').insert({
+          id: session.id,
+          user_id: session.userId,
+          title: session.title,
+          messages: session.messages,
+          created_at: session.createdAt,
+          updated_at: session.updatedAt,
+        });
+      } catch (err) {
+        console.warn('[Supabase] createChatSession failed:', err);
+      }
+    }
+
     this.data.chatSessions.push(session);
     this.save();
     return session;
   }
 
-  public addChatMessage(userId: string, sessionId: string, message: Omit<ChatMessage, 'id' | 'timestamp'>): ChatMessage {
-    const session = this.getChatSessionById(userId, sessionId);
+  public async addChatMessage(
+    userId: string,
+    sessionId: string,
+    message: Omit<ChatMessage, 'id' | 'timestamp'>
+  ): Promise<ChatMessage> {
+    const session = await this.getChatSessionById(userId, sessionId);
     if (!session) throw new Error('Chat session not found');
 
     const fullMessage: ChatMessage = {
@@ -857,73 +1589,218 @@ class Database {
 
     session.messages.push(fullMessage);
     session.updatedAt = new Date().toISOString();
+
+    if (this.supabase) {
+      try {
+        await this.supabase
+          .from('chat_sessions')
+          .update({ messages: session.messages, updated_at: session.updatedAt })
+          .eq('id', sessionId)
+          .eq('user_id', userId);
+      } catch (err) {
+        console.warn('[Supabase] addChatMessage update failed:', err);
+      }
+    }
+
     this.save();
     return fullMessage;
   }
 
-  public clearChatSession(userId: string, sessionId: string): void {
-    const session = this.getChatSessionById(userId, sessionId);
-    if (!session) throw new Error('Chat session not found');
-    session.messages = [];
-    session.updatedAt = new Date().toISOString();
-    this.save();
+  public async clearChatSession(userId: string, sessionId: string): Promise<void> {
+    if (this.supabase) {
+      try {
+        await this.supabase
+          .from('chat_sessions')
+          .update({ messages: [], updated_at: new Date().toISOString() })
+          .eq('id', sessionId)
+          .eq('user_id', userId);
+      } catch (err) {
+        console.warn('[Supabase] clearChatSession failed:', err);
+      }
+    }
+
+    const session = this.data.chatSessions.find((c) => c.id === sessionId && c.userId === userId);
+    if (session) {
+      session.messages = [];
+      session.updatedAt = new Date().toISOString();
+      this.save();
+    }
   }
 
-  // --- Visit Summaries ---
-  public getVisitSummaries(userId: string): VisitSummary[] {
+  // ============================================================================
+  // VISIT SUMMARIES
+  // ============================================================================
+  public async getVisitSummaries(userId: string): Promise<VisitSummary[]> {
+    if (this.supabase) {
+      try {
+        const { data, error } = await this.supabase
+          .from('visit_summaries')
+          .select('*')
+          .eq('user_id', userId);
+
+        if (!error && data && data.length > 0) {
+          return data
+            .map((s: any) => ({
+              id: s.id,
+              userId: s.user_id,
+              appointmentId: s.appointment_id || '',
+              appointmentTitle: s.appointment_title || 'Doctor Visit Summary',
+              doctorName: s.doctor_name || 'Oncologist',
+              appointmentDate: s.appointment_date,
+              chiefConcerns: s.chief_concerns || '',
+              symptomsSummary: s.symptoms_summary || '',
+              currentMedications: Array.isArray(s.current_medications) ? s.current_medications : [],
+              questionsForDoctor: Array.isArray(s.questions_for_doctor) ? s.questions_for_doctor : [],
+              patientNotes: s.patient_notes || '',
+              createdAt: s.created_at,
+            }))
+            .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        }
+      } catch (err) {
+        console.warn('[Supabase] getVisitSummaries failed:', err);
+      }
+    }
+
     return this.data.visitSummaries
       .filter((s) => s.userId === userId)
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   }
 
-  public createVisitSummary(userId: string, data: Omit<VisitSummary, 'id' | 'userId' | 'createdAt'>): VisitSummary {
+  public async createVisitSummary(
+    userId: string,
+    data: Omit<VisitSummary, 'id' | 'userId' | 'createdAt'>
+  ): Promise<VisitSummary> {
     const sum: VisitSummary = {
       id: `sum_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
       userId,
       ...data,
       createdAt: new Date().toISOString(),
     };
+
+    if (this.supabase) {
+      try {
+        await this.supabase.from('visit_summaries').insert({
+          id: sum.id,
+          user_id: sum.userId,
+          appointment_id: sum.appointmentId,
+          appointment_title: sum.appointmentTitle,
+          doctor_name: sum.doctorName,
+          appointment_date: sum.appointmentDate,
+          chief_concerns: sum.chiefConcerns,
+          symptoms_summary: sum.symptomsSummary,
+          current_medications: sum.currentMedications,
+          questions_for_doctor: sum.questionsForDoctor,
+          patient_notes: sum.patientNotes,
+          created_at: sum.createdAt,
+        });
+      } catch (err) {
+        console.warn('[Supabase] createVisitSummary failed:', err);
+      }
+    }
+
     this.data.visitSummaries.push(sum);
     this.save();
     return sum;
   }
 
-  public deleteVisitSummary(userId: string, summaryId: string): void {
+  public async deleteVisitSummary(userId: string, summaryId: string): Promise<void> {
+    if (this.supabase) {
+      try {
+        await this.supabase.from('visit_summaries').delete().eq('id', summaryId).eq('user_id', userId);
+      } catch (err) {
+        console.warn('[Supabase] deleteVisitSummary failed:', err);
+      }
+    }
+
     const index = this.data.visitSummaries.findIndex((s) => s.id === summaryId && s.userId === userId);
-    if (index === -1) throw new Error('Summary not found');
-    this.data.visitSummaries.splice(index, 1);
-    this.save();
+    if (index !== -1) {
+      this.data.visitSummaries.splice(index, 1);
+      this.save();
+    }
   }
 
-  // --- Password Reset ---
-  public createPasswordResetToken(email: string): string {
+  // ============================================================================
+  // PASSWORD RESET
+  // ============================================================================
+  public async createPasswordResetToken(email: string): Promise<string> {
     const token = crypto.randomBytes(24).toString('hex');
-    this.data.passwordResetTokens = this.data.passwordResetTokens.filter((t) => t.email.toLowerCase() !== email.toLowerCase());
+    const normalizedEmail = email.toLowerCase();
+    const expiresAt = Date.now() + 60 * 60 * 1000; // 1 hour
+
+    if (this.supabase) {
+      try {
+        await this.supabase.from('password_reset_tokens').delete().ilike('email', normalizedEmail);
+        await this.supabase.from('password_reset_tokens').insert({
+          token,
+          email: normalizedEmail,
+          expires_at: expiresAt,
+        });
+      } catch (err) {
+        console.warn('[Supabase] createPasswordResetToken failed:', err);
+      }
+    }
+
+    this.data.passwordResetTokens = this.data.passwordResetTokens.filter((t) => t.email.toLowerCase() !== normalizedEmail);
     this.data.passwordResetTokens.push({
       token,
-      email: email.toLowerCase(),
-      expiresAt: Date.now() + 60 * 60 * 1000, // 1 hour
+      email: normalizedEmail,
+      expiresAt,
     });
     this.save();
     return token;
   }
 
-  public resetPasswordWithToken(token: string, newPassword: string): boolean {
-    const item = this.data.passwordResetTokens.find((t) => t.token === token);
-    if (!item || Date.now() > item.expiresAt) {
-      return false;
+  public async resetPasswordWithToken(token: string, newPassword: string): Promise<boolean> {
+    let email: string | null = null;
+
+    if (this.supabase) {
+      try {
+        const { data } = await this.supabase
+          .from('password_reset_tokens')
+          .select('*')
+          .eq('token', token)
+          .maybeSingle();
+
+        if (data && Date.now() <= Number(data.expires_at)) {
+          email = data.email;
+          await this.supabase.from('password_reset_tokens').delete().eq('token', token);
+        }
+      } catch (err) {
+        console.warn('[Supabase] resetPasswordWithToken query failed:', err);
+      }
     }
-    const user = this.getUserByEmail(item.email);
+
+    if (!email) {
+      const item = this.data.passwordResetTokens.find((t) => t.token === token);
+      if (!item || Date.now() > item.expiresAt) {
+        return false;
+      }
+      email = item.email;
+      this.data.passwordResetTokens = this.data.passwordResetTokens.filter((t) => t.token !== token);
+      this.save();
+    }
+
+    const user = await this.getUserByEmail(email);
     if (!user) return false;
 
-    user.passwordHash = hashPassword(newPassword);
-    this.data.passwordResetTokens = this.data.passwordResetTokens.filter((t) => t.token !== token);
-    this.save();
+    const newHash = hashPassword(newPassword);
+    await this.updateUser(user.id, { passwordHash: newHash });
     return true;
   }
 
-  // --- Data Purge / Delete Account ---
-  public deleteUserData(userId: string): void {
+  // ============================================================================
+  // DATA PURGE / DELETE ACCOUNT
+  // ============================================================================
+  public async deleteUserData(userId: string): Promise<void> {
+    if (this.supabase) {
+      try {
+        // Cascade delete will delete related rows in appointments, sessions, journal, etc.
+        await this.supabase.from('users').delete().eq('id', userId);
+      } catch (err) {
+        console.warn('[Supabase] deleteUserData failed:', err);
+      }
+    }
+
     this.data.appointments = this.data.appointments.filter((a) => a.userId !== userId);
     this.data.journalEntries = this.data.journalEntries.filter((j) => j.userId !== userId);
     this.data.dailyTasks = this.data.dailyTasks.filter((t) => t.userId !== userId);
