@@ -9,7 +9,9 @@
 [![Express](https://img.shields.io/badge/Express-4.21-lightgrey.svg)](https://expressjs.com/)
 [![Google Gemini](https://img.shields.io/badge/AI-Google%20Gemini-4285F4.svg)](https://ai.google.dev/)
 [![Tailwind CSS](https://img.shields.io/badge/TailwindCSS-v4.0-38B2AC.svg)](https://tailwindcss.com/)
-[![Tests](https://img.shields.io/badge/Tests-43%20Passed-brightgreen.svg)]()
+[![Tests](https://img.shields.io/badge/Tests-44%20Unit%20%7C%2030%20E2E%20Passed-brightgreen.svg)]()
+[![Database](https://img.shields.io/badge/Database-Supabase%20PostgreSQL-3ECF8E.svg)](https://supabase.com/)
+[![Responsive](https://img.shields.io/badge/Mobile-320px%20to%204K%20Ready-orange.svg)]()
 
 *Submitted to CodeTheCure Hackathon 2026 | Patient Experience & Support Track*
 
@@ -44,11 +46,11 @@ CareBridge AI also features native **Urdu (اردو) and English bilingual suppo
 
 | Layer | Technology |
 |---|---|
-| **Frontend** | React 19 SPA, TypeScript, Vite 8, Tailwind CSS v4, Lucide React, Framer Motion |
+| **Frontend** | React 19 SPA, TypeScript, Vite 8, Tailwind CSS v4, Lucide React, Framer Motion (Responsive 320px–4K) |
 | **Backend** | Express.js, Node.js v22/v26, TypeScript (executed via `tsx`), Cookie-Parser |
-| **Database** | Embedded transactional JSON database (`server/db.ts`) with PBKDF2 hashing |
+| **Database** | Dual Persistence: Supabase PostgreSQL + Embedded transactional JSON fallback (`server/db.ts`) |
 | **AI Integration** | Google Gen AI SDK (`@google/genai`) with Gemini 2.5 Flash + Grounded Fallback Engine |
-| **Testing** | Automated TypeScript test suite (`tests/api.test.ts`), 43 assertions passing |
+| **Testing** | Automated test suite: **44 unit test assertions** + **30 live HTTP e2e tests** passing |
 
 ---
 
@@ -154,11 +156,11 @@ See the [`submission/`](./submission/) directory for full hackathon submission d
 
 | Layer | Technology |
 |---|---|
-| **Frontend** | React 19 SPA, TypeScript, Vite 8, Tailwind CSS v4, Lucide React, Framer Motion |
+| **Frontend** | React 19 SPA, TypeScript, Vite 8, Tailwind CSS v4, Lucide React, Framer Motion (Responsive 320px–4K) |
 | **Backend** | Express.js, Node.js v22/v26, TypeScript (executed via `tsx`), Cookie-Parser |
-| **Database** | Embedded transactional JSON database (`server/db.ts`) with PBKDF2 hashing |
+| **Database** | Dual Persistence: Supabase PostgreSQL + Embedded transactional JSON fallback (`server/db.ts`) |
 | **AI Integration** | Google Gen AI SDK (`@google/genai`) with Gemini 2.5 Flash + Grounded Fallback Engine |
-| **Testing** | Automated TypeScript test suite (`tests/api.test.ts`), 43 assertions passing |
+| **Testing** | Automated test suite: **44 unit test assertions** + **30 live HTTP e2e tests** passing |
 
 ---
 
